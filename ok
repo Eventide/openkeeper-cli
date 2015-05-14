@@ -7,12 +7,6 @@ ppp_eth=ppp0
 count=0
 maxcount=1  #拨号失败重试次数
 
-# Must be root
-if test "`/usr/bin/id -u`" != 0 ; then
-    echo "$0: You must be root to run this script" >& 2
-    exit 1
-fi
-
 echo "重邮openkeeper 自编译`arch`版"
 #DEBUG=1
 
@@ -83,7 +77,7 @@ if test -n $gateway_ip ; then
 	route del -net 202.202.0.0/16 > /dev/null 2>&1
 	route add -net 172.0.0.0/8 gw $gateway_ip -e $default_eth > /dev/null 2>&1
 	route add -net 202.202.0.0/16 gw $gateway_ip -e $default_eth > /dev/null 2>&1
-#	route add -net 123.58.173.106/31 gw $gateway_ip -e $default_eth 
+	route add -net 123.58.173.106/31 gw $gateway_ip -e $default_eth 
 fi
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置或用ok-refresh重置openkeeper"

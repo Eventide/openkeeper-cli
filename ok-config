@@ -1,13 +1,8 @@
 #!/bin/bash
+# TEMP_PATH 用来存放
 TEMP_PATH=/var/cache/openkeeper
 CONFIG_PATH=$TEMP_PATH/config
 
-
-# Must be root
-if test "`/usr/bin/id -u`" != 0 ; then
-	echo "$0: You must be root to run this script" >& 2
-	exit 1
-fi
 
 [[ ! -d $CONFIG_PATH ]]&&mkdir $TEMP_PATH&&mkdir $CONFIG_PATH
 cd $CONFIG_PATH

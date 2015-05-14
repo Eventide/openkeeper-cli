@@ -7,4 +7,4 @@ dialnetkeeper:$(OBJS)
 
 .PHONY:clean 
 clean:
-	-rm dialnetkeeper *.o
+	-rm -f dialnetkeeper *.o
