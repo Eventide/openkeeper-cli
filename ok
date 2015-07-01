@@ -6,7 +6,7 @@ CONFIG_PATH=$TEMP_PATH/config
 ppp_eth=ppp0
 count=0
 maxcount=1  #拨号失败重试次数
-
+cd /tmp
 echo "重邮openkeeper 自编译`arch`版"
 #DEBUG=1
 
