@@ -68,16 +68,16 @@ tmp_ip=${tmp_ip%% *}
 ppp_ip=$tmp_ip
 # 添加外网路由
 echo "外网IP:$ppp_ip"
-route add default -e $ppp_eth
+ip route del default > /dev/null 2>&1
+ip route add default dev $ppp_eth > /dev/null 2>&1
 
 gateway_ip=`/sbin/route -n|grep 0.0.0.0.*172|cut -c17-28`
 if test -n $gateway_ip ; then
 	echo "正在为网卡$default_eth IP:$gateway_ip添加内网路由..."
-	route del -net 172.0.0.0/8 > /dev/null 2>&1
-	route del -net 202.202.0.0/16 > /dev/null 2>&1
-	route add -net 172.0.0.0/8 gw $gateway_ip -e $default_eth > /dev/null 2>&1
-	route add -net 202.202.0.0/16 gw $gateway_ip -e $default_eth > /dev/null 2>&1
-	route add -net 123.58.173.106/31 gw $gateway_ip -e $default_eth 
+	ip route del 172.0.0.0/8 > /dev/null 2>&1
+	ip route del 202.202.0.0/16 > /dev/null 2>&1
+	ip route add 172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
+	ip route add 202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
 fi
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置或用ok-refresh重置openkeeper"
