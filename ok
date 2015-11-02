@@ -1,5 +1,5 @@
 #!/bin/bash
-PPPOE_START=/usr/sbin/pppoe-start
+PPPOE_START=/usr/sbin/ok-start
 TEMP_PATH=/var/cache/openkeeper
 INSTALL_PATH=/usr/share/openkeeper
 CONFIG_PATH=$TEMP_PATH/config
