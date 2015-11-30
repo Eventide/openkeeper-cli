@@ -62,7 +62,7 @@ do
 	fi
 done
 echo 登录成功
-rm Netkeeper.dat
+rm -f Netkeeper.dat
 
 ppp_ip=`ip addr | grep ppp0 | grep inet | awk '{print $2}'`
 # 添加外网路由
