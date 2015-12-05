@@ -7,6 +7,11 @@ ppp_eth=ppp0
 
 echo "重邮openkeeper 自编译`uname -m`版"
 
+if [ "0" != "$UID" ] ; then
+	echo "需要root权限!"
+	exit 1
+fi
+
 if [ ! -d $CONFIG_PATH ] ; then
 	echo "首次使用，调用ok-config命令进行配置，若配置错误将无法登录"
 	ok-config
@@ -25,35 +30,32 @@ ok-stop > /dev/null 2>&1
 
 tmpfile=`mktemp`
 tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
-
+	
+echo "尝试使用用户名$username,网卡$default_eth拨号"
+sync && realusername=`dialnetkeeper`
+realusername=${realusername//\"/\\\"}
+rm -f Netkeeper.dat
+	
+cp $INSTALL_PATH/pppoe.conf $TEMP_PATH/pppoe.conf-tmp
+cp $INSTALL_PATH/pap-secrets $TEMP_PATH/pap-secrets-tmp
+	
+echo "ETH=$default_eth" >> $TEMP_PATH/pppoe.conf-tmp
+echo "USER='\"$realusername\"'" >> $TEMP_PATH/pppoe.conf-tmp
+echo "\"$realusername\"	*	\"$password\"" >> $TEMP_PATH/pap-secrets-tmp
+	
+cp $TEMP_PATH/pppoe.conf-tmp /etc/ppp/pppoe.conf
+cp $TEMP_PATH/pap-secrets-tmp /etc/ppp/pap-secrets
+	
+sync && $PPPOE_START
+	
 if [ -n "`ip addr | grep $ppp_eth `" ] ; then
-	
-	echo "尝试使用用户名$username,网卡$default_eth拨号"
-	sync && realusername=`dialnetkeeper`
-	realusername=${realusername//\"/\\\"}
-	rm -f Netkeeper.dat
-	
-	cp $INSTALL_PATH/pppoe.conf $TEMP_PATH/pppoe.conf-tmp
-	cp $INSTALL_PATH/pap-secrets $TEMP_PATH/pap-secrets-tmp
-	
-	echo "ETH=$default_eth" >> $TEMP_PATH/pppoe.conf-tmp
-	echo "USER='\"$realusername\"'" >> $TEMP_PATH/pppoe.conf-tmp
-	echo "\"$realusername\"	*	\"$password\"" >> $TEMP_PATH/pap-secrets-tmp
-	
-	cp $TEMP_PATH/pppoe.conf-tmp /etc/ppp/pppoe.conf
-	cp $TEMP_PATH/pap-secrets-tmp /etc/ppp/pap-secrets
-	
-	sync && $PPPOE_START
-	
-	if test -n "`ip addr | grep $ppp_eth `" ; then
-		echo 登录成功!
-	else
-		pkill tcpdump
-		echo "拨号失败！错误信息：`grep -i Auth-NACK $tmpfile | sed 's/.*##//'`"
-		rm $tmpfile -f
-		echo "请检查账户时间，账户密码，网卡等配置，或者稍后再试;若配置错误，修改配置后，退出原终端后，在新终端中拨号（若在新终端中失败，请多试几次)"
-		exit 1
-	fi
+	echo 登录成功!
+else
+	pkill tcpdump
+	echo "拨号失败！错误信息：`grep -i Auth-NACK $tmpfile | sed 's/.*##//'`"
+	rm $tmpfile -f
+	echo "请检查账户时间，账户密码，网卡等配置，或者稍后再试;若配置错误，修改配置后，退出原终端后，在新终端中拨号（若在新终端中失败，请多试几次)"
+	exit 1
 fi
 
 ppp_ip=`ip route | grep $ppp_eth | grep src | awk '{print $9}'`
@@ -62,7 +64,7 @@ default_eth_ip=`ip route | grep $default_eth | grep src | awk '{print $9}'`
 echo "内网IP:$default_eth_ip"
 
 gateway_ip=`ip route | grep $default_eth | grep "202.202.32.114 via" | awk '{print $3}' `
-if test -n $gateway_ip ; then
+if [ -n $gateway_ip ] ; then
 
 	#删除默认路由
 	ip route del default > /dev/null 2>&1 
