@@ -7,7 +7,7 @@ ppp_eth=ppp0
 count=0
 maxcount=1  #拨号失败重试次数
 cd /tmp
-echo "重邮openkeeper 自编译`arch`版"
+echo "重邮openkeeper 自编译`uname -m`版"
 #DEBUG=1
 
 if [ ! -d $CONFIG_PATH ] ; then
@@ -31,7 +31,7 @@ pppoe-stop > /dev/null 2>&1
 tmpfile=$(mktemp)
 tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
 echo "尝试使用用户名$username,网卡$default_eth拨号"
-until test -n "`ifconfig | grep ppp`"
+until test -n "`ip addr | grep ppp0 `"
 do
 	if [ "$count" != 0 ]
 		then echo "第$count次登录失败"
@@ -46,38 +46,38 @@ do
 	cp $TEMP_PATH/pppoe.conf-tmp /etc/ppp/pppoe.conf
 	cp $TEMP_PATH/pap-secrets-tmp /etc/ppp/pap-secrets
 	$PPPOE_START
-	if test -n "`ifconfig|grep ppp`" ; then
+	if test -n "`ip addr | grep ppp`" ; then
 		break
 	else
 		count=`expr $count + 1`
 		if [ "$count" -eq "$maxcount" ]
 		then 
 			pkill tcpdump
-			echo "达到最大失败次数，错误信息：`grep -i Auth-NACK $tmpfile | sed 's/.*##//'`"
+			echo "拨号失败！错误信息：`grep -i Auth-NACK $tmpfile | sed 's/.*##//'`"
 			rm $tmpfile -f
-			echo "达到最大失败次数，请检查账户时间，账户密码，网卡等配置，或者稍后再试;若配置错误，修改配置后，退出原终端后，在新终端中拨号（若在新终端中失败，请多试几次,或者使用ok-reflesh重置openkeeper，或者稍后再试）。"
+			echo "请检查账户时间，账户密码，网卡等配置，或者稍后再试;若配置错误，修改配置后，退出原终端后，在新终端中拨号（若在新终端中失败，请多试几次,或者使用ok-reflesh重置openkeeper，或者稍后再试）。"
 			exit 0
 		fi
 		sleep 1
 	fi
 done
 echo 登录成功
+rm -f Netkeeper.dat
 
-tmp_ip=`ifconfig $ppp_eth|awk "(/[0-9]?[0-9]?[0-9]\.[1-9]?[1-9]?[1-9]\.[0-9]?[0-9]?[0-9]\.[0-9]?[0-9]?[0-9]/) {print}"|cut -d: -f2`
-tmp_ip=${tmp_ip%% *}
-ppp_ip=$tmp_ip
+ppp_ip=`ip addr | grep ppp0 | grep inet | awk '{print $2}'`
 # 添加外网路由
 echo "外网IP:$ppp_ip"
 ip route del default > /dev/null 2>&1
 ip route add default dev $ppp_eth > /dev/null 2>&1
 
-gateway_ip=`/sbin/route -n|grep 0.0.0.0.*172|cut -c17-28`
+gateway_ip=`ip route  | grep $ppp_eth | grep $ppp_ip | awk '{print $1}' `
 if test -n $gateway_ip ; then
-	echo "正在为网卡$default_eth IP:$gateway_ip添加内网路由..."
-	ip route del 172.0.0.0/8 > /dev/null 2>&1
-	ip route del 202.202.0.0/16 > /dev/null 2>&1
-	ip route add 172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
-	ip route add 202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
+	echo "正在为网卡:$ppp_eth"
+	echo "网关:$gateway_ip 添加内网路由..."
+	ip route del  172.0.0.0/8 > /dev/null 2>&1
+	ip route del  202.202.0.0/16 > /dev/null 2>&1
+	ip route add  172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
+	ip route add  202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
 fi
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置或用ok-refresh重置openkeeper"
