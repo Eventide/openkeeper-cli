@@ -5,7 +5,7 @@
 
 ## 依赖关系
 
-rp-pppoe, net-tools, tcpdump
+rp-pppoe, iproute2, tcpdump
 
 ## 编译
 
