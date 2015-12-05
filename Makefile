@@ -12,8 +12,8 @@ install: all
 	mkdir -p $(INSTALL_PATH)
 	cp pppoe.conf $(INSTALL_PATH)
 	cp pap-secrets $(INSTALL_PATH)
-	mv /usr/sbin/pppoe-connect /usr/sbin/pppoe-connect.old
-	cp pppoe-connect /usr/sbin/pppoe-connect
+	cp ok-start	/usr/sbin/ok-start
+	cp ok-connect /usr/sbin/ok-connect
 uninstall:
 	rm /usr/bin/dialnetkeeper -f
 	rm /usr/sbin/ok -f
@@ -21,7 +21,7 @@ uninstall:
 	rm /usr/sbin/ok-config -f
 	rm /usr/sbin/ok-stop -f
 	rm $(INSTALL_PATH) -rf
-	rm /usr/sbin/pppoe-connect -f
-	mv /usr/sbin/pppoe-connect.old /usr/sbin/pppoe-connect
+	rm /usr/sbin/ok-connect -f
+	rm /usr/sbin/ok-start -f
 clean:
 	@(cd $(SUBDIR) && $(MAKE) clean)

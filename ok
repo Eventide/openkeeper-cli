@@ -1,5 +1,5 @@
 #!/bin/bash
-PPPOE_START=/usr/sbin/pppoe-start
+PPPOE_START=/usr/sbin/ok-start
 TEMP_PATH=/var/cache/openkeeper
 INSTALL_PATH=/usr/share/openkeeper
 CONFIG_PATH=$TEMP_PATH/config
@@ -65,19 +65,21 @@ echo 登录成功
 rm -f Netkeeper.dat
 
 ppp_ip=`ip addr | grep ppp0 | grep inet | awk '{print $2}'`
+echo $ppp_ip
 # 添加外网路由
 echo "外网IP:$ppp_ip"
-ip route del default > /dev/null 2>&1
-ip route add default dev $ppp_eth > /dev/null 2>&1
 
-gateway_ip=`ip route  | grep $ppp_eth | grep $ppp_ip | awk '{print $1}' `
+gateway_ip=`ip route  | grep $default_eth | grep default.*172 | awk '{print $3}' `
 if test -n $gateway_ip ; then
 	echo "正在为网卡:$ppp_eth"
 	echo "网关:$gateway_ip 添加内网路由..."
 	ip route del  172.0.0.0/8 > /dev/null 2>&1
 	ip route del  202.202.0.0/16 > /dev/null 2>&1
-	ip route add  172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
+	ip route add  172.16.0.0/12 via $gateway_ip > /dev/null 2>&1
 	ip route add  202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
+	ip route del default 
+	ip route add default via $ppp_ip
+	ip route add default via $ppp_ip #我也不知道为什么要写两次。。。
 fi
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置或用ok-refresh重置openkeeper"
