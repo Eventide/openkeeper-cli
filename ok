@@ -60,11 +60,11 @@ fi
 
 ppp_ip=`ip route | grep $ppp_eth | grep src | awk '{print $9}'`
 echo "外网IP:$ppp_ip"
-default_eth_ip=`ip route | grep $default_eth | grep src | awk '{print $9}'`
+default_eth_ip=`ip route | grep $default_eth | grep metric | awk '{print $9}'`
 echo "内网IP:$default_eth_ip"
 
 gateway_ip=`ip route | grep $default_eth | grep "202.202.32.114 via" | awk '{print $3}' `
-if [ -n $gateway_ip ] ; then
+if [ -n "$gateway_ip" ] ; then
 
 	#删除默认路由
 	ip route del default > /dev/null 2>&1 
