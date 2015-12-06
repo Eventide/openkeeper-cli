@@ -4,85 +4,86 @@ TEMP_PATH=/var/cache/openkeeper
 INSTALL_PATH=/usr/share/openkeeper
 CONFIG_PATH=$TEMP_PATH/config
 ppp_eth=ppp0
-count=0
-maxcount=1  #拨号失败重试次数
-cd /tmp
+
 echo "重邮openkeeper 自编译`uname -m`版"
-#DEBUG=1
+
+if [ "0" != "$UID" ] ; then
+	echo "需要root权限!"
+	exit 1
+fi
 
 if [ ! -d $CONFIG_PATH ] ; then
 	echo "首次使用，调用ok-config命令进行配置，若配置错误将无法登录"
 	ok-config
 fi
 
-#请务必在下面填上自己的网卡、账号和密码
 #网卡:
 default_eth=`cat $CONFIG_PATH/eth`
-
-
 #用户名:
 username=`cat $CONFIG_PATH/user`
 #密码:
 password=`cat $CONFIG_PATH/pass`
 
-
+cd /tmp
 echo $username > Netkeeper.dat
-pppoe-stop > /dev/null 2>&1
-tmpfile=$(mktemp)
+ok-stop > /dev/null 2>&1
+
+tmpfile=`mktemp`
 tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
+	
 echo "尝试使用用户名$username,网卡$default_eth拨号"
-until test -n "`ip addr | grep ppp0 `"
-do
-	if [ "$count" != 0 ]
-		then echo "第$count次登录失败"
-	fi
-	realusername=`dialnetkeeper`
-	realusername=${realusername//\"/\\\"}
-	cp $INSTALL_PATH/pppoe.conf $TEMP_PATH/pppoe.conf-tmp
-	cp $INSTALL_PATH/pap-secrets $TEMP_PATH/pap-secrets-tmp
-	echo "ETH=$default_eth" >> $TEMP_PATH/pppoe.conf-tmp
-	echo "USER='\"$realusername\"'" >> $TEMP_PATH/pppoe.conf-tmp
-	echo "\"$realusername\"	*	\"$password\"" >> $TEMP_PATH/pap-secrets-tmp
-	cp $TEMP_PATH/pppoe.conf-tmp /etc/ppp/pppoe.conf
-	cp $TEMP_PATH/pap-secrets-tmp /etc/ppp/pap-secrets
-	$PPPOE_START
-	if test -n "`ip addr | grep ppp`" ; then
-		break
-	else
-		count=`expr $count + 1`
-		if [ "$count" -eq "$maxcount" ]
-		then 
-			pkill tcpdump
-			echo "拨号失败！错误信息：`grep -i Auth-NACK $tmpfile | sed 's/.*##//'`"
-			rm $tmpfile -f
-			echo "请检查账户时间，账户密码，网卡等配置，或者稍后再试;若配置错误，修改配置后，退出原终端后，在新终端中拨号（若在新终端中失败，请多试几次,或者使用ok-reflesh重置openkeeper，或者稍后再试）。"
-			exit 0
-		fi
-		sleep 1
-	fi
-done
-echo 登录成功
+sync && realusername=`dialnetkeeper`
+realusername=${realusername//\"/\\\"}
 rm -f Netkeeper.dat
+	
+cp $INSTALL_PATH/pppoe.conf $TEMP_PATH/pppoe.conf-tmp
+cp $INSTALL_PATH/pap-secrets $TEMP_PATH/pap-secrets-tmp
+	
+echo "ETH=$default_eth" >> $TEMP_PATH/pppoe.conf-tmp
+echo "USER='\"$realusername\"'" >> $TEMP_PATH/pppoe.conf-tmp
+echo "\"$realusername\"	*	\"$password\"" >> $TEMP_PATH/pap-secrets-tmp
+	
+cp $TEMP_PATH/pppoe.conf-tmp /etc/ppp/pppoe.conf
+cp $TEMP_PATH/pap-secrets-tmp /etc/ppp/pap-secrets
+	
+sync && $PPPOE_START
+	
+if [ -n "`ip addr | grep $ppp_eth `" ] ; then
+	echo 登录成功!
+else
+	pkill tcpdump
+	echo "拨号失败！错误信息：`grep -i Auth-NACK $tmpfile | sed 's/.*##//'`"
+	rm $tmpfile -f
+	echo "请检查账户时间，账户密码，网卡等配置，或者稍后再试;若配置错误，修改配置后，退出原终端后，在新终端中拨号（若在新终端中失败，请多试几次)"
+	exit 1
+fi
 
-ppp_ip=`ip addr | grep ppp0 | grep inet | awk '{print $2}'`
-echo $ppp_ip
-# 添加外网路由
+ppp_ip=`ip route | grep $ppp_eth | grep src | awk '{print $9}'`
 echo "外网IP:$ppp_ip"
+default_eth_ip=`ip route | grep $default_eth | grep metric | awk '{print $9}'`
+echo "内网IP:$default_eth_ip"
 
-gateway_ip=`ip route  | grep $default_eth | grep default.*172 | awk '{print $3}' `
-if test -n $gateway_ip ; then
-	echo "正在为网卡:$ppp_eth"
-	echo "网关:$gateway_ip 添加内网路由..."
+gateway_ip=`ip route | grep $default_eth | grep "202.202.32.114 via" | awk '{print $3}' `
+if [ -n "$gateway_ip" ] ; then
+
+	#删除默认路由
+	ip route del default > /dev/null 2>&1 
 	ip route del  172.0.0.0/8 > /dev/null 2>&1
 	ip route del  202.202.0.0/16 > /dev/null 2>&1
-	ip route add  172.16.0.0/12 via $gateway_ip > /dev/null 2>&1
+
+	#添加内网路由
+	ip route add  172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
 	ip route add  202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
-	ip route del default 
-	ip route add default via $ppp_ip
-	ip route add default via $ppp_ip #我也不知道为什么要写两次。。。
+	
+	#添加外网路由	
+	#我也不知道内外网路由为什么要添加两次才成功。。。
+	ip route add default via $ppp_ip > /dev/null 2>&1 
+	ip route add default via $ppp_ip > /dev/null 2>&1
 fi
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
-echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置或用ok-refresh重置openkeeper"
+echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置"
+
 grep -i Auth-NACK $tmpfile
 pkill tcpdump; rm $tmpfile
+
 exit 0

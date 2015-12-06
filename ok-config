@@ -3,6 +3,10 @@
 TEMP_PATH=/var/cache/openkeeper
 CONFIG_PATH=$TEMP_PATH/config
 
+if [ "0" != "$UID" ] ; then
+	echo "需要root权限!"
+	exit 1
+fi
 
 [[ ! -d $CONFIG_PATH ]]&&mkdir $TEMP_PATH&&mkdir $CONFIG_PATH
 cd $CONFIG_PATH

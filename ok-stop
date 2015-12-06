@@ -1,2 +1,9 @@
 #!/bin/bash
-/usr/sbin/pppoe-stop
+if [ "0" != "$UID" ] ; then
+	echo "You must be root to run this script!"
+else
+	killall ok-connect > /dev/null 2>&1
+	killall pppd > /dev/null 2>&1
+	echo "你已成功下线！"
+fi
+exit 0

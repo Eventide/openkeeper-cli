@@ -1,11 +1,7 @@
-# openkeeper-cli
-重庆高校电信上网拨号程序的Linux实现。
-
-# 安装
+# openkeeper-cli 重庆高校电信上网拨号程序的Linux实现。
 
 ## 依赖关系
-
-rp-pppoe, net-tools, tcpdump
+rp-pppoe, iproute2, tcpdump
 
 ## 编译
 
@@ -15,7 +11,7 @@ rp-pppoe, net-tools, tcpdump
 
 > $ sudo make install
 
-# 配置
+## 配置
 
 可以使用
 
@@ -40,5 +36,4 @@ rp-pppoe, net-tools, tcpdump
 即可拨号。
 
 # 卸载
-
 > $ sudo make uninstall
