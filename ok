@@ -60,6 +60,12 @@ fi
 
 ppp_ip=`ip route | grep $ppp_eth | grep src | awk '{print $9}'`
 echo "外网IP:$ppp_ip"
+ipv6_ip_p1=`echo $ppp_ip | awk -F'.' '{printf("%x", $1)}'`
+ipv6_ip_p2=`echo $ppp_ip | awk -F'.' '{printf("%x", $2)}'`
+ipv6_ip_p3=`echo $ppp_ip | awk -F'.' '{printf("%x", $3)}'`
+ipv6_ip_p4=`echo $ppp_ip | awk -F'.' '{printf("%x", $4)}'`
+ipv6_ip=2002:$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4::$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4
+echo "IPV6:$ipv6_ip"
 default_eth_ip=`ip route | grep $default_eth | grep metric | awk '{print $9}'`
 echo "内网IP:$default_eth_ip"
 
