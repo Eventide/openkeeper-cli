@@ -60,11 +60,16 @@ fi
 
 ppp_ip=`ip route | grep $ppp_eth | grep src | awk '{print $9}'`
 echo "外网IP:$ppp_ip"
+## 添加6TO4隧道
+ip tunnel add tun6to4 mode sit ttl 64 remote any local $ppp_ip
+ip link set dev tun6to4 up
+## 添加IPv6地址
 ipv6_ip_p1=`echo $ppp_ip | awk -F'.' '{printf("%x", $1)}'`
 ipv6_ip_p2=`echo $ppp_ip | awk -F'.' '{printf("%x", $2)}'`
 ipv6_ip_p3=`echo $ppp_ip | awk -F'.' '{printf("%x", $3)}'`
 ipv6_ip_p4=`echo $ppp_ip | awk -F'.' '{printf("%x", $4)}'`
 ipv6_ip=2002:$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4::$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4
+ip -6 addr add $ipv6_ip/16 dev tun6to4
 echo "IPV6:$ipv6_ip"
 default_eth_ip=`ip route | grep $default_eth | grep metric | awk '{print $9}'`
 echo "内网IP:$default_eth_ip"
@@ -85,6 +90,11 @@ if [ -n "$gateway_ip" ] ; then
 	#我也不知道内外网路由为什么要添加两次才成功。。。
 	ip route add default via $ppp_ip > /dev/null 2>&1 
 	ip route add default via $ppp_ip > /dev/null 2>&1
+
+	## 添加IPv6路由
+	ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
+
+
 fi
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置"
