@@ -1,39 +1,38 @@
-# openkeeper-cli 重庆高校电信上网拨号程序的Linux实现。
-
-## 依赖关系
-rp-pppoe, iproute2, tcpdump
-
-## 编译
-
-> $ make
+# 重庆高校 Linux 上网客户端 openkeeper
 
 ## 安装
 
-> $ sudo make install
+#### Ubuntu
+###### 安装依赖软件
+**`$ sudo apt-get install build-essential pppoe git`**
+###### 安装 openkeeper
+**`$ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install`**
+
+#### Fedora
+###### 安装依赖软件
+**`$ sudo dnf install gcc gcc-c++ make rp-pppoe git`**
+###### 安装 openkeeper
+**` $ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install `**
+
+#### Arch Linux
+###### 安装依赖软件
+**` $ sudo pacman -S gcc ppp rp-pppoe make git `**
+###### 安装 openkeeper
+**` $ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install `**
 
 ## 配置
+###### 查看有线网口
+*终端执行 `ip link` ，查看输出，有线网口名称一般为 eth0 ， enp1s0 等.*
+###### 填写配置文件
+**`$ sudo ok-config`**
 
-可以使用
+## 拨号
+**`$ sudo ok`**
+## 下线
+**`$ sudo ok-stop`**
 
-> $ sudo ok-config
+## 卸载
+**`$ cd /tmp/openkeeper-cli && sudo make uninstall `**
 
-设置用户名、密码、网络接口。
-
-用户名、密码即为在电信高校客户端中填写的用户名、密码。
-
-网络接口为拨号所使用的网络端口，请通过
-
-> $ ip link
-
-查询。
-
-# 拨号
-
-使用
-
-> $ sudo ok
-
-即可拨号。
-
-# 卸载
-> $ sudo make uninstall
+##### 问题反馈
+*Email: rain_of_mem@163.com*
