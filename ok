@@ -30,11 +30,15 @@ ok-stop > /dev/null 2>&1
 
 tmpfile=`mktemp`
 tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
-	
+
+
+
+#######################################################################################
+#	利用dialnetkeeper 计算帐号，填写 rp-pppoe 配置，调用 ok-connect 拨号
+#######################################################################################
 echo "尝试使用用户名$username,网卡$default_eth拨号"
 sync && realusername=`dialnetkeeper`
 realusername=${realusername//\"/\\\"}
-rm -f Netkeeper.dat
 	
 cp $INSTALL_PATH/pppoe.conf $TEMP_PATH/pppoe.conf-tmp
 cp $INSTALL_PATH/pap-secrets $TEMP_PATH/pap-secrets-tmp
@@ -47,7 +51,12 @@ cp $TEMP_PATH/pppoe.conf-tmp /etc/ppp/pppoe.conf
 cp $TEMP_PATH/pap-secrets-tmp /etc/ppp/pap-secrets
 	
 sync && $PPPOE_START
-	
+
+
+
+#######################################################################################
+#				检测是否拨号成功
+#######################################################################################
 if [ -n "`ip addr | grep $ppp_eth `" ] ; then
 	echo 登录成功!
 else
@@ -58,8 +67,20 @@ else
 	exit 1
 fi
 
-ppp_ip=`ip route | grep $ppp_eth | grep src | awk '{print $9}'`
+
+
+#######################################################################################
+#				显示内外网IP
+#######################################################################################
+ppp_ip=`ip route | grep src | grep $ppp_eth | awk '{print $9}'`
 echo "外网IP:$ppp_ip"
+default_eth_ip=`ip route | grep src | grep $default_eth | awk '{print $9}'`
+echo "内网IP:$default_eth_ip"
+
+#######################################################################################
+#				 ipv6 处理
+#######################################################################################
+
 ## 添加6TO4隧道
 ip tunnel add tun6to4 mode sit ttl 64 remote any local $ppp_ip
 ip link set dev tun6to4 up
@@ -71,35 +92,52 @@ ipv6_ip_p4=`echo $ppp_ip | awk -F'.' '{if ($4>16) {printf("%x",$4)} else {printf
 ipv6_ip=2002:$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4::$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4
 ip -6 addr add $ipv6_ip/16 dev tun6to4
 echo "IPV6:$ipv6_ip"
-default_eth_ip=`ip route | grep $default_eth | grep metric | awk '{print $9}'`
-echo "内网IP:$default_eth_ip"
 
-gateway_ip=`ip route | grep $default_eth | grep "202.202.32.114 via" | awk '{print $3}' `
-if [ -n "$gateway_ip" ] ; then
 
-	#删除默认路由
-	ip route del default > /dev/null 2>&1 
-	ip route del  172.0.0.0/8 > /dev/null 2>&1
-	ip route del  202.202.0.0/16 > /dev/null 2>&1
+#######################################################################################
+#				路由处理
+#######################################################################################
+if [ "cqupt" == "`echo "$username" | awk -F '@' '{print $2}'`" ] ; then
 
-	#添加内网路由
-	ip route add  172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
-	ip route add  202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
+	gateway_ip=`ip route | grep $default_eth | grep "proto dhcp" | awk '{print $3}' `
+	if [ -n "$gateway_ip" ] ; then
+
+		#删除默认路由
+		ip route del default > /dev/null 2>&1 
+		ip route del  172.0.0.0/8 > /dev/null 2>&1
+		ip route del  202.202.0.0/16 > /dev/null 2>&1
 	
-	#添加外网路由	
-	#我也不知道内外网路由为什么要添加两次才成功。。。
-	ip route add default via $ppp_ip > /dev/null 2>&1 
+		#添加内网路由
+		ip route add  172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
+		ip route add  202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
+		
+		#添加外网路由	
+		#我也不知道外网路由为什么要添加两次才成功。。。
+		ip route add default via $ppp_ip > /dev/null 2>&1 
+		ip route add default via $ppp_ip > /dev/null 2>&1
+		
+		#ipv6 路由
+		ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
+	fi
+else
+	
+	#非重邮的帐号默认不处理内网情况。
+	#其他学校可以根据相应内网情况在此添加内网路由。
+	
+	#ipv4 路由
+	ip route del default > /dev/null 2>&1
 	ip route add default via $ppp_ip > /dev/null 2>&1
-
-	## 添加IPv6路由
+	
+	#ipv6 路由
 	ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
-
-
 fi
+
+
+
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置"
 
 grep -i Auth-NACK $tmpfile
-pkill tcpdump; rm $tmpfile
+pkill tcpdump; rm $tmpfile Netkeeper.dat
 
 exit 0
