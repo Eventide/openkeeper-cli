@@ -6,19 +6,19 @@
 ###### 安装依赖软件
 **`$ sudo apt-get install build-essential pppoe git`**
 ###### 安装 openkeeper
-**`$ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install`**
+**`$ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && git checkout ipv6 && make && sudo make install`**
 
 #### Fedora
 ###### 安装依赖软件
 **`$ sudo dnf install gcc gcc-c++ make rp-pppoe git`**
 ###### 安装 openkeeper
-**` $ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install `**
+**`$ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && git checkout ipv6 && make && sudo make install`**
 
 #### Arch Linux
 ###### 安装依赖软件
 **` $ sudo pacman -S gcc ppp rp-pppoe make git `**
 ###### 安装 openkeeper
-**` $ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install `**
+**`$ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && git checkout ipv6 && make && sudo make install`**
 
 ## 配置
 ###### 查看有线网口
