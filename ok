@@ -99,7 +99,7 @@ else
 fi
 
 #变更默认路由	
-ip route change default dev ppp0 > /dev/null 2>&1
+ip route replace default dev ppp0 > /dev/null 2>&1
 
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置"
