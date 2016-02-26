@@ -113,7 +113,7 @@ else
 fi
 
 #改变默认路由
-ip route change default dev $ppp_eth > /dev/null 2>&1
+ip route replace default dev $ppp_eth > /dev/null 2>&1
 #ipv6 路由
 ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
 
