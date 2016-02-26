@@ -98,41 +98,24 @@ echo "IPV6:$ipv6_ip"
 #				路由处理
 #######################################################################################
 if [ "cqupt" == "`echo "$username" | awk -F '@' '{print $2}'`" ] ; then
-
 	gateway_ip=`ip route | grep $default_eth | grep "proto dhcp" | awk '{print $3}' `
 	if [ -n "$gateway_ip" ] ; then
-
-		#删除默认路由
-		ip route del default > /dev/null 2>&1 
 		ip route del  172.0.0.0/8 > /dev/null 2>&1
 		ip route del  202.202.0.0/16 > /dev/null 2>&1
 	
 		#添加内网路由
 		ip route add  172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
 		ip route add  202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
-		
-		#添加外网路由	
-		#我也不知道外网路由为什么要添加两次才成功。。。
-		ip route add default via $ppp_ip > /dev/null 2>&1 
-		ip route add default via $ppp_ip > /dev/null 2>&1
-		
-		#ipv6 路由
-		ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
 	fi
 else
-	
 	#非重邮的帐号默认不处理内网情况。
-	#其他学校可以根据相应内网情况在此添加内网路由。
-	
-	#ipv4 路由
-	ip route del default > /dev/null 2>&1
-	ip route add default via $ppp_ip > /dev/null 2>&1
-	
-	#ipv6 路由
-	ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
+	echo "非重邮学校可以根据相应内网情况自行添加内网路由。"
 fi
 
-
+#改变默认路由
+ip route change default dev $ppp_eth > /dev/null 2>&1
+#ipv6 路由
+ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
 
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置"
