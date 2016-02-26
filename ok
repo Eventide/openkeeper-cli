@@ -88,7 +88,6 @@ if [ "cqupt" == "`echo "$username" | awk -F '@' '{print $2}'`" ] ; then
 	if [ -n "$gateway_ip" ] ; then
 
 		#删除默认路由
-		ip route del default > /dev/null 2>&1 
 		ip route del  172.0.0.0/8 > /dev/null 2>&1
 		ip route del  202.202.0.0/16 > /dev/null 2>&1
 	
@@ -98,8 +97,7 @@ if [ "cqupt" == "`echo "$username" | awk -F '@' '{print $2}'`" ] ; then
 		
 		#添加外网路由	
 		#我也不知道外网路由为什么要添加两次才成功。。。
-		ip route add default via $ppp_ip > /dev/null 2>&1 
-		ip route add default via $ppp_ip > /dev/null 2>&1
+		ip route change default dev ppp0 > /dev/null 2>&1
 	fi
 else
 	
