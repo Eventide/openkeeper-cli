@@ -14,6 +14,9 @@ install: all
 	cp pap-secrets $(INSTALL_PATH)
 	cp ok-start	/usr/sbin/ok-start
 	cp ok-connect /usr/sbin/ok-connect
+	chmod a+x /usr/bin/dialnetkeeper
+	chmod a+x /usr/sbin/ok
+	chmod a+x /usr/sbin/ok-*
 uninstall:
 	rm /usr/bin/dialnetkeeper -f
 	rm /usr/sbin/ok -f
