@@ -9,7 +9,7 @@
 **`$ sudo apt-get install build-essential pppoe git`**
 
 ###### Fedora
-**`$ sudo dnf install gcc make rp-pppoe git`**
+**`$ sudo dnf install gcc gcc-c++ make rp-pppoe git`**
 
 ###### Arch Linux
 **` $ sudo pacman -S gcc ppp rp-pppoe make git `**
