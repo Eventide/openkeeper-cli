@@ -2,23 +2,19 @@
 
 ## 安装
 
-#### Ubuntu
-###### 安装依赖软件
+#### 安装依赖软件
+
+###### Ubuntu 
 **`$ sudo apt-get install build-essential pppoe git`**
-###### 安装 openkeeper
-**`$ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && git checkout new_dialnetkeeper && make && sudo make install`**
 
-#### Fedora
-###### 安装依赖软件
+###### Fedora
 **`$ sudo dnf install gcc make rp-pppoe git`**
-###### 安装 openkeeper
-**` $ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && git checkout new_dialnetkeeper && make && sudo make install `**
 
-#### Arch Linux
-###### 安装依赖软件
+###### Arch Linux
 **` $ sudo pacman -S gcc ppp rp-pppoe make git `**
-###### 安装 openkeeper
-**` $ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && git checkout new_dialnetkeepe && rmake && sudo make install `**
+
+#### 安装 openkeeper
+**` $ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && git checkout new_dialnetkeeper && make && sudo make install `**
 
 ## 配置
 ###### 查看有线网口
