@@ -1,23 +1,20 @@
+
 # 重庆高校 Linux 上网客户端 openkeeper
 
 ## 安装
 
-#### Ubuntu
-###### 安装依赖软件
+#### 安装依赖软件
+
+###### Ubuntu 
 **`$ sudo apt-get install build-essential pppoe git`**
-###### 安装 openkeeper
-**`$ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install`**
 
-#### Fedora
-###### 安装依赖软件
+###### Fedora
 **`$ sudo dnf install gcc gcc-c++ make rp-pppoe git`**
-###### 安装 openkeeper
-**` $ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install `**
 
-#### Arch Linux
-###### 安装依赖软件
+###### Arch Linux
 **` $ sudo pacman -S gcc ppp rp-pppoe make git `**
-###### 安装 openkeeper
+
+#### 安装 openkeeper
 **` $ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install `**
 
 ## 配置
