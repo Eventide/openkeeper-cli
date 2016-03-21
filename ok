@@ -25,19 +25,17 @@ username=`cat $CONFIG_PATH/user`
 password=`cat $CONFIG_PATH/pass`
 
 cd /tmp
-echo $username > Netkeeper.dat
 ok-stop > /dev/null 2>&1
 
 tmpfile=`mktemp`
 tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
 
-
-
 #######################################################################################
 #	利用dialnetkeeper 计算帐号，填写 rp-pppoe 配置，调用 ok-connect 拨号
 #######################################################################################
 echo "尝试使用用户名$username,网卡$default_eth拨号"
-sync && realusername=`dialnetkeeper`
+
+realusername=`dialnetkeeper $username cqxinliradius002`
 realusername=${realusername//\"/\\\"}
 	
 cp $INSTALL_PATH/pppoe.conf $TEMP_PATH/pppoe.conf-tmp
@@ -50,9 +48,7 @@ echo "\"$realusername\"	*	\"$password\"" >> $TEMP_PATH/pap-secrets-tmp
 cp $TEMP_PATH/pppoe.conf-tmp /etc/ppp/pppoe.conf
 cp $TEMP_PATH/pap-secrets-tmp /etc/ppp/pap-secrets
 	
-sync && $PPPOE_START
-
-
+$PPPOE_START
 
 #######################################################################################
 #				检测是否拨号成功
@@ -67,8 +63,6 @@ else
 	exit 1
 fi
 
-
-
 #######################################################################################
 #				显示内外网IP
 #######################################################################################
@@ -76,8 +70,6 @@ ppp_ip=`ip route | grep src | grep $ppp_eth | awk '{print $9}'`
 echo "外网IP:$ppp_ip"
 default_eth_ip=`ip route | grep src | grep $default_eth | awk '{print $9}'`
 echo "内网IP:$default_eth_ip"
-
-
 
 #######################################################################################
 #				路由处理
@@ -105,6 +97,6 @@ echo "拨号结束，若关闭本终端，不会断开网络连接，断开网�
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置"
 
 grep -i Auth-NACK $tmpfile
-pkill tcpdump; rm $tmpfile Netkeeper.dat
+pkill tcpdump; rm $tmpfile
 
 exit 0

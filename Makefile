@@ -1,10 +1,10 @@
 INSTALL_PATH=/usr/share/openkeeper
-SUBDIR=diallinux_v1.0_src_a
+SUBDIR=dialnetkeeper
 
 all:
-	@(cd $(SUBDIR) && $(MAKE) dialnetkeeper)
+	@(cd $(SUBDIR) && $(MAKE) )
 install: all
-	cp diallinux_v1.0_src_a/dialnetkeeper /usr/bin/
+	cp dialnetkeeper/dialnetkeeper /usr/bin/
 	cp ok /usr/sbin/
 	cp ok-config /usr/sbin
 	cp ok-refresh /usr/sbin
@@ -14,6 +14,9 @@ install: all
 	cp pap-secrets $(INSTALL_PATH)
 	cp ok-start	/usr/sbin/ok-start
 	cp ok-connect /usr/sbin/ok-connect
+	chmod a+x /usr/bin/dialnetkeeper
+	chmod a+x /usr/sbin/ok
+	chmod a+x /usr/sbin/ok-*
 uninstall:
 	rm /usr/bin/dialnetkeeper -f
 	rm /usr/sbin/ok -f
