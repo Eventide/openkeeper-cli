@@ -15,7 +15,7 @@
 **`$ sudo pacman -S gcc openssl rp-pppoe make git`**
 
 #### 安装 openkeeper
-**`$ cd /tmp && git clone https://github.com/RainMark/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install `**
+**`$ cd /tmp && git clone https://github.com/Eventide/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install `**
 
 ## 配置
 ###### 查看有线网口
