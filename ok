@@ -57,7 +57,8 @@ sync && $PPPOE_START
 #######################################################################################
 #				检测是否拨号成功
 #######################################################################################
-if [ -n "`ip addr | grep $ppp_eth `" ] ; then
+ppp_ip=`ip a show dev $ppp_eth | awk '/inet [12]/{print $2}'`
+if [ -n "$ppp_ip" ] ; then
 	echo 登录成功!
 else
 	pkill tcpdump
@@ -72,9 +73,10 @@ fi
 #######################################################################################
 #				显示内外网IP
 #######################################################################################
-ppp_ip=`ip route | grep src | grep $ppp_eth | awk '{print $9}'`
+ppp_ip=`echo $ppp_ip | awk -F '/' '{print $1}'`
 echo "外网IP:$ppp_ip"
-default_eth_ip=`ip route | grep src | grep $default_eth | awk '{print $9}'`
+default_eth_ip=`ip a show dev $default_eth | awk '/inet [12]/{print $2}'`
+default_eth_ip=`echo $default_eth_ip | awk -F '/' '{print $1}'`
 echo "内网IP:$default_eth_ip"
 
 
@@ -83,7 +85,7 @@ echo "内网IP:$default_eth_ip"
 #				路由处理
 #######################################################################################
 if [ "cqupt" == "`echo "$username" | awk -F '@' '{print $2}'`" ] ; then
-	gateway_ip=`ip route | grep $default_eth | grep "proto dhcp" | awk '{print $3}' `
+	gateway_ip=`ip r | awk '/default via/&&/dev '"$default_eth"'/{print $3}'`
 	if [ -n "$gateway_ip" ] ; then
 		#删除默认路由
 		ip route del  172.0.0.0/8 > /dev/null 2>&1
