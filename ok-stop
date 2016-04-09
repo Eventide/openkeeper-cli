@@ -6,4 +6,7 @@ else
 	killall pppd > /dev/null 2>&1
 	echo "你已成功下线！"
 fi
+ip -6 route flush dev tun6to4
+ip link set dev tun6to4 down
+ip tunnel del tun6to4
 exit 0

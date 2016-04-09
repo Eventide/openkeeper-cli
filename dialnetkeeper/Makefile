@@ -1,9 +1,11 @@
 CC = gcc
 CFLAGS = -lcrypto -Wall
 
-dialnetkeeper: dialnetkeeper.c
+dialnetkeeper: dialnetkeeper.o
 	$(CC) $(CFLAGS) $< -o $(@F)
 
+%.o: %.c
+	$(CC) $(CFLAGS) -c $<
 .PHONY: clean install uninstall
 
 clean:

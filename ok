@@ -36,7 +36,6 @@ tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
 echo "尝试使用用户名$username,网卡$default_eth拨号"
 
 realusername=`dialnetkeeper $username cqxinliradius002`
-realusername=${realusername//\"/\\\"}
 	
 cp $INSTALL_PATH/pppoe.conf $TEMP_PATH/pppoe.conf-tmp
 cp $INSTALL_PATH/pap-secrets $TEMP_PATH/pap-secrets-tmp
@@ -76,7 +75,7 @@ echo "内网IP:$default_eth_ip"
 #######################################################################################
 #				路由处理
 #######################################################################################
-if [ "cqupt" == "`echo "$username" | awk -F '@' '{print $2}'`" ] ; then
+if [ "cqupt" == "$(echo $username | awk -F '@' '{print $2}')" ] ; then
 	gateway_ip=`ip r | awk '/default via/&&/dev '"$default_eth"'/{print $3}'`
 	if [ -n "$gateway_ip" ] ; then
 		#删除默认路由
@@ -86,6 +85,7 @@ if [ "cqupt" == "`echo "$username" | awk -F '@' '{print $2}'`" ] ; then
 		#添加内网路由
 		ip route add  172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
 		ip route add  202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
+
 	fi
 else
 	#非重邮的帐号默认不处理内网情况。
@@ -94,6 +94,24 @@ fi
 
 #变更默认路由	
 ip route replace default dev $ppp_eth > /dev/null 2>&1
+
+#######################################################################################
+#				IPv6
+#######################################################################################
+
+## 添加6TO4隧道
+ip tunnel add tun6to4 mode sit ttl 64 remote any local $ppp_ip
+ip link set dev tun6to4 up
+## 添加IPv6地址
+ipv6_ip_p1=`echo $ppp_ip | awk -F'.' '{if ($1>16) {printf("%x",$1)} else {printf("0%x",$1)}}'`
+ipv6_ip_p2=`echo $ppp_ip | awk -F'.' '{if ($2>16) {printf("%x",$2)} else {printf("0%x",$2)}}'`
+ipv6_ip_p3=`echo $ppp_ip | awk -F'.' '{if ($3>16) {printf("%x",$3)} else {printf("0%x",$3)}}'`
+ipv6_ip_p4=`echo $ppp_ip | awk -F'.' '{if ($4>16) {printf("%x",$4)} else {printf("0%x",$4)}}'`
+ipv6_ip=2002:$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4::$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4
+ip -6 addr add $ipv6_ip/16 dev tun6to4
+echo "IPV6:$ipv6_ip"
+ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
+
 
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置"

@@ -7,7 +7,6 @@ install: all
 	cp dialnetkeeper/dialnetkeeper /usr/bin/
 	cp ok /usr/sbin/
 	cp ok-config /usr/sbin
-	cp ok-refresh /usr/sbin
 	cp ok-stop /usr/sbin
 	mkdir -p $(INSTALL_PATH)
 	cp pppoe.conf $(INSTALL_PATH)
@@ -20,7 +19,6 @@ install: all
 uninstall:
 	rm /usr/bin/dialnetkeeper -f
 	rm /usr/sbin/ok -f
-	rm /usr/sbin/ok-refresh -f
 	rm /usr/sbin/ok-config -f
 	rm /usr/sbin/ok-stop -f
 	rm $(INSTALL_PATH) -rf
