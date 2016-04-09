@@ -32,6 +32,5 @@
 **`$ cd /tmp/openkeeper-cli && sudo make uninstall`**
 
 ##### 问题反馈
-*Email: rain_of_mem@163.com*
-
-*Email: nanjingzr@yahoo.com*
+```Email: rain_of_mem@163.com
+Email: nanjingzr@yahoo.com```
