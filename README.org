@@ -27,7 +27,7 @@ $ cd /tmp && git clone https://github.com/Eventide/openkeeper-cli.git && cd open
 
 ** 配置
 *** 查看有线网口
-*终端执行 ~ip link~ ，查看输出，有线网口名称一般为 eth0 ， enp1s0 等.*
+终端执行 =ip link= ，查看输出，有线网口名称一般为 eth0 ， enp1s0 等.
 *** 填写配置文件
 #+BEGIN_SRC 
 $ sudo ok-config
