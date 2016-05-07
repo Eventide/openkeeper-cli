@@ -1,19 +1,25 @@
 CC = gcc
-CFLAGS = -lcrypto -Wall
+CFLAGS = -lssl -lcrypto -Wall
+
+DIST = $(shell chmod 755 dist.sh && ./dist.sh)
+
+ifeq ($(DIST), ubuntu-16-04)
+	CFLAGS += /lib/$(uname -m)-linux-gnu/
+endif
 
 dialnetkeeper: dialnetkeeper.o
 	$(CC) $(CFLAGS) $< -o $(@F)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
+
 .PHONY: clean install uninstall
 
 clean:
 	-rm *.o dialnetkeeper
 
 install:
-	@sudo cp /usr/bin/dialnetkeeper dialnetkeeper.bak 
 	@sudo cp dialnetkeeper /usr/bin/
 
 uninstall:
-	@sudo cp dialnetkeeper.bak /usr/bin/dialnetkeeper
+	@sudo rm /usr/bin/dialnetkeeper
