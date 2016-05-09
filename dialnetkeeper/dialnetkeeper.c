@@ -3,8 +3,8 @@
 int main( int argc, char *argv[] )
 {
 	char user_src[ BUF_SIZE ];
-	char user_real[ BUF_SIZE ];
-	char radius[16];
+	char user_real[ BUF_SIZE + RADIUS_BUF_SIZE];
+	char radius[RADIUS_BUF_SIZE];
 
 	get_user_message( argc, argv, user_src, radius );
 	get_real_user_name( user_src, radius, user_real );
@@ -29,6 +29,17 @@ void get_user_message( int argc, char *argv[], char *user, char *radius )
 				"QingHai: qhtel@xiaoyuanyi\n" );
 		exit(-1);
 	}
+
+	if (strlen(argv[1]) > BUF_SIZE - 1) {
+		fprintf(stderr, "User name too long!\n");
+		exit(-1);
+	}
+
+	if (strlen(argv[2]) > RADIUS_BUF_SIZE - 1) {
+		fprintf(stderr, "Radius too long!\n");
+		exit(-1);
+	}
+
 	strcpy( user, argv[1] );
 	strcpy( radius, argv[2] );
 }

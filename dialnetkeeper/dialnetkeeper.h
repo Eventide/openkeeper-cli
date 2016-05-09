@@ -11,6 +11,10 @@
 #define BUF_SIZE (512)
 #endif /* BUF_SIZE */
 
+#ifndef RADIUS_BUF_SIZE
+#define RADIUS_BUF_SIZE (16+1)
+#endif /* RADIUS_BUF_SIZE */
+
 void get_user_message( int argc, char *argv[], char *user, char *radius );
 void get_real_user_name( const char *src, const char *radius, char *dst );
 
