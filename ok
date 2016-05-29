@@ -36,17 +36,17 @@ tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
 echo "尝试使用用户名$username,网卡$default_eth拨号"
 
 realusername=`dialnetkeeper $username cqxinliradius002`
-	
+
 cp $INSTALL_PATH/pppoe.conf $TEMP_PATH/pppoe.conf-tmp
 cp $INSTALL_PATH/pap-secrets $TEMP_PATH/pap-secrets-tmp
-	
+
 echo "ETH=$default_eth" >> $TEMP_PATH/pppoe.conf-tmp
 echo "USER='\"$realusername\"'" >> $TEMP_PATH/pppoe.conf-tmp
 echo "\"$realusername\"	*	\"$password\"" >> $TEMP_PATH/pap-secrets-tmp
-	
+
 cp $TEMP_PATH/pppoe.conf-tmp /etc/ppp/pppoe.conf
 cp $TEMP_PATH/pap-secrets-tmp /etc/ppp/pap-secrets
-	
+
 $PPPOE_START
 
 #######################################################################################
@@ -81,7 +81,7 @@ if [ "cqupt" == "$(echo $username | awk -F '@' '{print $2}')" ] ; then
 		#删除默认路由
 		ip route del  172.0.0.0/8 > /dev/null 2>&1
 		ip route del  202.202.0.0/16 > /dev/null 2>&1
-	
+
 		#添加内网路由
 		ip route add  172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
 		ip route add  202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
@@ -92,8 +92,9 @@ else
 	echo "非重邮学校可以根据相应内网情况自行添加内网路由。"
 fi
 
-#变更默认路由	
-ip route replace default dev $ppp_eth > /dev/null 2>&1
+#变更默认路由
+ip route replace default dev $ppp_eth > /dev/null 2>&1 && \
+    ip route replace default dev $ppp_eth > /dev/null 2>&1		# Ubuntu 15.10 以及其衍生版测试发现需要两次 replace 才生效，所以 23333333333.
 
 #######################################################################################
 #				IPv6
