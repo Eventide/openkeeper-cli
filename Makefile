@@ -4,18 +4,15 @@ SUBDIR=dialnetkeeper
 all:
 	@(cd $(SUBDIR) && $(MAKE) )
 install: all
-	cp dialnetkeeper/dialnetkeeper /usr/bin/
-	cp ok /usr/sbin/
-	cp ok-config /usr/sbin
-	cp ok-stop /usr/sbin
 	mkdir -p $(INSTALL_PATH)
-	cp pppoe.conf $(INSTALL_PATH)
-	cp pap-secrets $(INSTALL_PATH)
-	cp ok-start	/usr/sbin/ok-start
-	cp ok-connect /usr/sbin/ok-connect
-	chmod a+x /usr/bin/dialnetkeeper
-	chmod a+x /usr/sbin/ok
-	chmod a+x /usr/sbin/ok-*
+	install -m 755 dialnetkeeper/dialnetkeeper /usr/bin/
+	install -m 755 ok /usr/sbin/
+	install -m 755 ok-config /usr/sbin
+	install -m 755 ok-stop /usr/sbin
+	install -m 755 ok-start /usr/sbin
+	install -m 755 ok-connect /usr/sbin
+	install -m 644 pppoe.conf $(INSTALL_PATH)
+	install -m 644 pap-secrets $(INSTALL_PATH)
 uninstall:
 	rm /usr/bin/dialnetkeeper -f
 	rm /usr/sbin/ok -f
