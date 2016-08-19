@@ -5,9 +5,9 @@ if [ "0" != "$UID" ] ; then
 else
 	killall ok-connect > /dev/null 2>&1
 	killall pppd > /dev/null 2>&1
-	ip -6 route flush dev tun6to4
-	ip link set dev tun6to4 down
-	ip tunnel del tun6to4
+	ip -6 route flush dev tun6to4 > /dev/null 2>&1
+	ip link set dev tun6to4 down > /dev/null 2>&1
+	ip tunnel del tun6to4 > /dev/null 2>&1
 	echo "你已成功下线！"
 fi
 exit 0
