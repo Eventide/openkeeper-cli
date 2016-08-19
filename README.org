@@ -3,6 +3,11 @@
 
 ** 安装
 
+Arch Linux 用户可直接从 AUR 上安装。
+#+BEGIN_SRC
+$ yaourt -S openkeeper-cli
+#+END_SRC
+
 *** 安装依赖软件
 
 **** Ubuntu 
@@ -13,11 +18,6 @@ $ sudo apt-get install build-essential libssl-dev pppoe git
 **** Fedora
 #+BEGIN_SRC 
 $ sudo dnf install gcc libssl-devl make rp-pppoe git
-#+END_SRC
-
-**** Arch Linux
-#+BEGIN_SRC 
-$ sudo pacman -S gcc openssl rp-pppoe make git
 #+END_SRC
 
 *** 安装 openkeeper
