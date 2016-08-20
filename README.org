@@ -3,26 +3,27 @@
 
 ** 安装
 
-Arch Linux 用户可直接从 AUR 上安装。
+*** 直接安装
+**** Arch Linux
 #+BEGIN_SRC
 $ yaourt -S openkeeper-cli
+or
+$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1-x86_64.pkg.tar
+$ sudo pacman -U openkeeper-cli-2.0-1-x86_64.pkg.tar
 #+END_SRC
-
-*** 安装依赖软件
 
 **** Ubuntu 
 #+BEGIN_SRC 
-$ sudo apt-get install build-essential libssl-dev pppoe git
+$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-v2.0-amd64.deb
+$ sudo dpkg -i openkeeper-cli-v2.0-amd64.deb
 #+END_SRC
 
-**** Fedora
+*** 源码安装
 #+BEGIN_SRC 
-$ sudo dnf install gcc libssl-devl make rp-pppoe git
-#+END_SRC
-
-*** 安装 openkeeper
-#+BEGIN_SRC 
-$ cd /tmp && git clone https://github.com/Eventide/openkeeper-cli.git && cd openkeeper-cli && make && sudo make install 
+$ git clone https://github.com/Eventide/openkeeper-cli.git
+$ cd openkeeper-cli
+$ make 
+$ sudo make install 
 #+END_SRC
 
 ** 配置
