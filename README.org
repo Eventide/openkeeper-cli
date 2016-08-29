@@ -14,14 +14,14 @@ $ sudo pacman -U openkeeper-cli-2.0-1-x86_64.pkg.tar
 
 **** Ubuntu 
 #+BEGIN_SRC 
-$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1-x86_64.deb
+$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1.x86_64.deb
 $ sudo apt-get install gdebi-core
 $ sudo gdebi openkeeper-cli-2.0-1-x86_64.deb
 #+END_SRC
 
 **** Fedora
 #+BEGIN_SRC 
-$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1-x86_64.rpm
+$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1.x86_64.rpm
 $ sudo yum install openkeeper-cli-2.0-1-x86_64.rpm
 or
 $ sudo dnf install openkeeper-cli-2.0-1-x86_64.rpm
