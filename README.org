@@ -14,11 +14,21 @@ $ sudo pacman -U openkeeper-cli-2.0-1-x86_64.pkg.tar
 
 **** Ubuntu 
 #+BEGIN_SRC 
-$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-v2.0-amd64.deb
-$ sudo dpkg -i openkeeper-cli-v2.0-amd64.deb
+$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1-x86_64.deb
+$ sudo apt-get install gdebi-core
+$ sudo gdebi openkeeper-cli-2.0-1-x86_64.deb
+#+END_SRC
+
+**** Fedora
+#+BEGIN_SRC 
+$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1-x86_64.rpm
+$ sudo yum install openkeeper-cli-2.0-1-x86_64.rpm
+or
+$ sudo dnf install openkeeper-cli-2.0-1-x86_64.rpm
 #+END_SRC
 
 *** 源码安装
+注意：需要满足 rp-pppoe 、 openssl 依赖。
 #+BEGIN_SRC 
 $ git clone https://github.com/Eventide/openkeeper-cli.git
 $ cd openkeeper-cli
