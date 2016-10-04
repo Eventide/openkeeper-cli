@@ -1,23 +1,21 @@
 INSTALL_PATH=/usr/share/openkeeper
-SUBDIR=diallinux_v1.0_src_a
+SUBDIR=dialnetkeeper
 
 all:
-	@(cd $(SUBDIR) && $(MAKE) dialnetkeeper)
+	@(cd $(SUBDIR) && $(MAKE) )
 install: all
-	cp diallinux_v1.0_src_a/dialnetkeeper /usr/bin/
-	cp ok /usr/sbin/
-	cp ok-config /usr/sbin
-	cp ok-refresh /usr/sbin
-	cp ok-stop /usr/sbin
 	mkdir -p $(INSTALL_PATH)
-	cp pppoe.conf $(INSTALL_PATH)
-	cp pap-secrets $(INSTALL_PATH)
-	cp ok-start	/usr/sbin/ok-start
-	cp ok-connect /usr/sbin/ok-connect
+	install -m 755 dialnetkeeper/dialnetkeeper /usr/bin/
+	install -m 755 ok /usr/sbin/
+	install -m 755 ok-config /usr/sbin
+	install -m 755 ok-stop /usr/sbin
+	install -m 755 ok-start /usr/sbin
+	install -m 755 ok-connect /usr/sbin
+	install -m 644 pppoe.conf $(INSTALL_PATH)
+	install -m 644 pap-secrets $(INSTALL_PATH)
 uninstall:
 	rm /usr/bin/dialnetkeeper -f
 	rm /usr/sbin/ok -f
-	rm /usr/sbin/ok-refresh -f
 	rm /usr/sbin/ok-config -f
 	rm /usr/sbin/ok-stop -f
 	rm $(INSTALL_PATH) -rf

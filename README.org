@@ -1,0 +1,63 @@
+
+* 重庆高校 Linux 上网客户端 openkeeper
+
+** 安装
+
+*** 直接安装
+**** Arch Linux
+#+BEGIN_SRC
+$ yaourt -S openkeeper-cli
+or
+$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1-x86_64.pkg.tar
+$ sudo pacman -U openkeeper-cli-2.0-1-x86_64.pkg.tar
+#+END_SRC
+
+**** Ubuntu 
+#+BEGIN_SRC 
+$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1.x86_64.deb
+$ sudo apt-get install gdebi-core
+$ sudo gdebi openkeeper-cli-2.0-1-x86_64.deb
+#+END_SRC
+
+**** Fedora
+#+BEGIN_SRC 
+$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1.x86_64.rpm
+$ sudo yum install openkeeper-cli-2.0-1-x86_64.rpm
+or
+$ sudo dnf install openkeeper-cli-2.0-1-x86_64.rpm
+#+END_SRC
+
+*** 源码安装
+注意：需要满足 rp-pppoe 、 openssl 依赖。
+#+BEGIN_SRC 
+$ git clone https://github.com/Eventide/openkeeper-cli.git
+$ cd openkeeper-cli
+$ make 
+$ sudo make install 
+#+END_SRC
+
+** 配置
+*** 查看有线网口
+终端执行 =ip link= ，查看输出，有线网口名称一般为 eth0 ， enp1s0 等.
+*** 填写配置文件
+#+BEGIN_SRC 
+$ sudo ok-config
+#+END_SRC
+
+** 拨号
+#+BEGIN_SRC 
+$ sudo ok
+#+END_SRC
+** 下线
+#+BEGIN_SRC 
+$ sudo ok-stop
+#+END_SRC
+
+** 卸载
+#+BEGIN_SRC 
+$ cd /tmp/openkeeper-cli && sudo make uninstall
+#+END_SRC
+
+** 问题反馈
+Email: rain_of_mem@163.com\\
+Email: nanjingzr@yahoo.com
