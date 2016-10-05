@@ -83,8 +83,19 @@ if [ "cqupt" == "$(echo $username | awk -F '@' '{print $2}')" ] ; then
 		ip route del  202.202.0.0/16 > /dev/null 2>&1
 
 		#添加内网路由
-		ip route add  172.0.0.0/8 via $gateway_ip > /dev/null 2>&1
-		ip route add  202.202.0.0/16 via $gateway_ip > /dev/null 2>&1
+		ip route add  172.16.0.0/12 via $gateway_ip > /dev/null 2>&1
+		ip route add  172.22.0.0/12 via $gateway_ip > /dev/null 2>&1
+		ip route add  172.32.0.0/12 via $gateway_ip > /dev/null 2>&1
+		ip route add  172.33.0.0/12 via $gateway_ip > /dev/null 2>&1
+		ip route add  172.34.0.0/12 via $gateway_ip > /dev/null 2>&1
+		ip route add  202.202.32.0/20 via $gateway_ip > /dev/null 2>&1
+		ip route add  202.202.43.0/20 via $gateway_ip > /dev/null 2>&1
+		ip route add  202.202.45.0/20 via $gateway_ip > /dev/null 2>&1
+		ip route add  222.177.140.0/25 via $gateway_ip > /dev/null 2>&1
+		ip route add  219.153.62.64/27 via $gateway_ip > /dev/null 2>&1
+		ip route add  211.83.208.0/20 via $gateway_ip > /dev/null 2>&1
+		ip route add  192.168.0.0/16 via $gateway_ip > /dev/null 2>&1
+		ip route add  10.10.10.0/24 via $gateway_ip > /dev/null 2>&1
 
 	fi
 else
