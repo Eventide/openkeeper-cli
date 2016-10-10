@@ -84,7 +84,6 @@ if [ "cqupt" == "$(echo $username | awk -F '@' '{print $2}')" ] ; then
 
 		#添加内网路由
 		ip route add  172.16.0.0/12 via $gateway_ip > /dev/null 2>&1
-		ip route add  172.22.0.0/16 via $gateway_ip > /dev/null 2>&1
 		ip route add  172.32.0.0/16 via $gateway_ip > /dev/null 2>&1
 		ip route add  172.33.0.0/16 via $gateway_ip > /dev/null 2>&1
 		ip route add  172.34.0.0/16 via $gateway_ip > /dev/null 2>&1
