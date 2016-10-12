@@ -27,6 +27,13 @@ or
 $ sudo dnf install openkeeper-cli-2.0-1-x86_64.rpm
 #+END_SRC
 
+**** openSUSE 
+#+BEGIN_SRC 
+$ sudo zypper addrepo http://download.opensuse.org/repositories/home:stawidy/openSUSE_Leap_42.1/home:stawidy.repo
+$ sudo zypper refresh
+$ sudo zypper install openkeeper-cli
+#+END_SRC
+
 *** 源码安装
 注意：需要满足 rp-pppoe 、 openssl 依赖。
 #+BEGIN_SRC 
