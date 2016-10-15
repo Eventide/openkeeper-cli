@@ -8,15 +8,15 @@
 #+BEGIN_SRC
 $ yaourt -S openkeeper-cli
 or
-$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-3-x86_64.pkg.tar
-$ sudo pacman -U openkeeper-cli-2.0-3-x86_64.pkg.tar
+$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-4-x86_64.pkg.tar
+$ sudo pacman -U openkeeper-cli-2.0-4-x86_64.pkg.tar
 #+END_SRC
 
 **** Ubuntu 
 #+BEGIN_SRC 
 $ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1.x86_64.deb
 $ sudo apt-get install gdebi-core
-$ sudo gdebi openkeeper-cli-2.0-1-x86_64.deb
+$ sudo gdebi openkeeper-cli-2.0-1.x86_64.deb
 #+END_SRC
 
 **** Fedora
