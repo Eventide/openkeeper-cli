@@ -7,9 +7,6 @@
 **** Arch Linux
 #+BEGIN_SRC
 $ yaourt -S openkeeper-cli
-or
-$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-4-x86_64.pkg.tar
-$ sudo pacman -U openkeeper-cli-2.0-4-x86_64.pkg.tar
 #+END_SRC
 
 **** Ubuntu 

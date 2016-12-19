@@ -17,9 +17,9 @@ build() {
 }
 
 package() {
-    cd "$srcdir/$pkgname-$pkgver"
-    mkdir -p "$pkgdir/usr/bin/"
-    mkdir -p "$pkgdir/usr/share/openkeeper/"
+	cd "$srcdir/$pkgname-$pkgver"
+	mkdir -p "$pkgdir/usr/bin/"
+	mkdir -p "$pkgdir/usr/share/openkeeper/"
 	install -Dm 755 "dialnetkeeper/dialnetkeeper" "$pkgdir/usr/bin/"
 	install -Dm 755 "ok" "$pkgdir/usr/bin/"
 	install -Dm 755 "ok-config" "$pkgdir/usr/bin/"
