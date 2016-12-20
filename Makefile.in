@@ -1,0 +1,22 @@
+CC = @CC@
+LD = @CC@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+SRC_DIR = src
+
+$(SRC_DIR)/dialnetkeeper: $(SRC_DIR)/dialnetkeeper.o
+	$(LD) $< $(LDFLAGS) -o $@
+
+$(SRC_DIR)/%.o: $(SRC_DIR)%.c
+	$(CC) -c $< $(CFLAGS)
+
+.PHONY: clean install uninstall
+
+clean:
+	-rm $(SRC_DIR)/*.o $(SRC_DIR)dialnetkeeper
+
+install:
+	install -m 755 dialnetkeeper /usr/bin/
+
+uninstall:
+	rm /usr/bin/dialnetkeeper
