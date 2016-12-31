@@ -32,10 +32,10 @@ $ sudo zypper install openkeeper-cli
 #+END_SRC
 
 *** 源码安装
-注意：需要满足 rp-pppoe 、 openssl 依赖。
 #+BEGIN_SRC 
 $ git clone https://github.com/Eventide/openkeeper-cli.git
 $ cd openkeeper-cli
+$ ./configure --prefix=/usr/local
 $ make 
 $ sudo make install 
 #+END_SRC

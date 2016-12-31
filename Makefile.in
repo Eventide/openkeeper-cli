@@ -1,7 +1,7 @@
 CC = @CC@
 LD = @CC@
-CFLAGS = @CFLAGS@
-LDFLAGS = @LDFLAGS@
+CFLAGS = -O2 -Wall
+LDFLAGS = -lcrypto
 SRC_DIR = src
 PREFIX = @prefix@
 BIN_DIR = @prefix@/bin
@@ -21,7 +21,7 @@ clean:
 
 install:
 	mkdir -p $(DATA_DIR)
-	install -m 755 "$SRC_DIR"/dialnetkeeper "$(BIN_DIR)"
+	install -m 755 "$(SRC_DIR)"/dialnetkeeper "$(BIN_DIR)"
 	install -m 755 ok "$(BIN_DIR)"
 	install -m 755 ok-config "$(BIN_DIR)"
 	install -m 755 ok-stop "$(BIN_DIR)"

@@ -27,7 +27,7 @@ prefix=/usr
 exec_prefix=${prefix}
 
 # Paths to programs
-CONNECT=${exec_prefix}/sbin/ok-connect
+CONNECT=@prefix@/bin/ok-connect
 ECHO=/bin/echo
 IFCONFIG=/sbin/ifconfig
 

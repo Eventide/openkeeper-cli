@@ -2,11 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_INIT([openkeeper-cli], [2.0], [rain.by.zhou@gmail.com])
 AC_CONFIG_SRCDIR([src/dialnetkeeper.h])
 
 # Checks for programs.
-dnl AC_PATH_PROG([PPPOE_CONNECT], [pppoe-connect], [], [$PATH])
 AC_PROG_CC
 AC_PROG_INSTALL
 
@@ -26,5 +26,5 @@ fi
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([strcspn])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile ok ok-start])
 AC_OUTPUT
