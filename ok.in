@@ -85,7 +85,7 @@ fi
 #FIXME
 #Ubuntu 15.10 以及其衍生版测试发现需要两次 replace 才生效
 ip route replace default dev $ppp_eth > /dev/null 2>&1
-ip route replace default dev $ppp_eth > /dev/null 2>&1		
+ip route replace default dev $ppp_eth > /dev/null 2>&1
 
 #######################################################################################
 ## 添加6TO4隧道
