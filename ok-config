@@ -12,7 +12,7 @@ fi
 cd $CONFIG_PATH
 
 sflag=0
-USAGE="$0 -u 189XXXX1970@cqupt -p supermzb0010 -e eth0 -s"
+USAGE="$0 -u xxxxxx@cqupt -p password -e eth0 -s"
 while getopts :u:p:e:s OPTION ; do
 	case "$OPTION" in
 		u) user="$OPTARG" ;;
@@ -54,6 +54,6 @@ function setconfig() {
 	chmod 600 $CONFIG_PATH/$1
 }
 
-setconfig user $user "用于拨号的账户(例如：189XXXX1970@cqupt)" $sflag
-setconfig pass $pass "请输入账户密码(例如：supermzb0010)" $sflag
+setconfig user $user "用于拨号的账户(例如：xxxxxx@cqupt)" $sflag
+setconfig pass $pass "请输入账户密码(例如：password)" $sflag
 setconfig eth  $eth "用于拨号的网卡(例如：eth0 wlan0 enp1s0 wlp1s0等，终端下ip link命令可查询)" $sflag
