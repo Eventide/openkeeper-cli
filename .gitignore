@@ -1,0 +1,6 @@
+*.cache
+*.log
+*.status
+ok
+ok-start
+Makefile

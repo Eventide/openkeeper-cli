@@ -34,8 +34,8 @@ tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
 #######################################################################################
 echo "尝试使用用户名$username,网卡$default_eth拨号"
 realusername=`dialnetkeeper "$username" cqxinliradius002`
-m4 -DM4_USER="$realusername" -DM4_ETH="$default_eth" "$INSTALL_PATH"/pap-secrets > /etc/ppp/pap-secrets
-m4 -DM4_USER="$realusername" -DM4_PASSWORD="$password" "$INSTALL_PATH"/pppoe.conf > /etc/ppp/pppoe.conf
+m4 -DM4_USER="$realusername" -DM4_ETH="$default_eth" "$INSTALL_PATH"/pppoe.conf > /etc/ppp/pppoe.conf
+m4 -DM4_USER="$realusername" -DM4_PASSWORD="$password" "$INSTALL_PATH"/pap-secrets > /etc/ppp/pap-secrets
 ok-start
 
 #######################################################################################
