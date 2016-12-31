@@ -1,14 +1,15 @@
 #!/bin/bash
-PREFIX=@prefix@
+
+INSTALL_PATH=@prefix@/share/openkeeper
+
 TEMP_PATH=/var/cache/openkeeper
-INSTALL_PATH="$PREFIX"/share/openkeeper
 CONFIG_PATH="$TEMP_PATH"/config
 ppp_eth=ppp0
 
 echo "重邮openkeeper 自编译`uname -m`版"
 
 if [ "0" != "$UID" ] ; then
-	echo "需要root权限!"
+	echo "需要 root 权限"
 	exit 1
 fi
 
@@ -24,7 +25,7 @@ username=`cat $CONFIG_PATH/user`
 #密码:
 password=`cat $CONFIG_PATH/pass`
 
-cd /tmp
+cd "$TEMP_PATH"
 ok-stop > /dev/null 2>&1
 
 tmpfile=`mktemp`

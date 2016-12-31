@@ -11,16 +11,16 @@ AC_PROG_CC
 AC_PROG_INSTALL
 
 # Checks for libraries.
-AC_CHECK_HEADERS([openssl/md5.h], [], [AC_MSG_ERROR([please install libssl-dev.])])
 AC_CHECK_LIB([crypto], [MD5_Init], [], [AC_MSG_ERROR([please install libssl])])
+AC_CHECK_HEADERS([openssl/md5.h], [], [AC_MSG_ERROR([please install libssl headers])])
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h string.h])
+AC_CHECK_HEADERS([stdlib.h string.h time.h])
 
 # Checks for scripts.
 AC_CHECK_PROG(PPPOE_CONNECT, pppoe-connect, yes)
 if test x"$PPPOE_CONNECT" != x"yes" ; then
-    AC_MSG_ERROR([please install rp-pppoe.])
+    AC_MSG_ERROR([please install rp-pppoe])
 fi
 
 AC_FUNC_MALLOC

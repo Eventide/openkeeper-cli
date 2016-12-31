@@ -21,15 +21,15 @@ setconfig() {
 }
 
 if [ "0" != "$UID" ] ; then
-	echo "需要root权限!"
+	echo "需要 root 权限"
 	exit 1
 fi
 
 mkdir -p "$CONFIG_PATH"
 cd $CONFIG_PATH
 
-setconfig user "用于拨号的账户(例如：xxxxxx@cqupt)"
-setconfig pass "请输入账户密码(例如：password)"
+setconfig user "用于拨号的账户(例如：xxxxxx@cqupt )"
+setconfig pass "请输入账户密码(例如：password )"
 
 infs="`ip link | awk -F ': ' '/[2-9]:/{print $2}'`"
 setconfig eth  $eth "用于拨号的网卡(选项：$infs )"

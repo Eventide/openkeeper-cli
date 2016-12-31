@@ -18,7 +18,7 @@
 # Usage: pppoe-connect [config_file]
 #        pppoe-connect interface user [config_file]
 # Second form overrides USER and ETH from config file.
-# If config_file is omitted, defaults to /etc//ppp/pppoe.conf
+# If config_file is omitted, defaults to /etc/ppp/pppoe.conf
 #
 #***********************************************************************
 
@@ -48,7 +48,7 @@ if test "$SETSID" != "" -a ! -x "$SETSID"; then
     SETSID=""
 fi
 
-CONFIG=/etc//ppp/pppoe.conf
+CONFIG=/etc/ppp/pppoe.conf
 USER=""
 ETH=""
 

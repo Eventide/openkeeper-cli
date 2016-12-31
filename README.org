@@ -1,8 +1,5 @@
-
 * 重庆高校 Linux 上网客户端 openkeeper
-
 ** 安装
-
 *** 直接安装
 **** Arch Linux
 #+BEGIN_SRC
@@ -59,9 +56,13 @@ $ sudo ok-stop
 
 ** 卸载
 #+BEGIN_SRC 
-$ cd /tmp/openkeeper-cli && sudo make uninstall
+$ git clone https://github.com/Eventide/openkeeper-cli.git
+$ cd openkeeper-cli
+$ ./configure --prefix=/usr/local
+$ sudo make uninstall
 #+END_SRC
 
 ** 问题反馈
-Email: rain_of_mem@163.com\\
+Email: rain.by.zhou@gmail.com\\
+Email: duyizhaozj321@yahoo.com\\
 Email: nanjingzr@yahoo.com
