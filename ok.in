@@ -41,7 +41,7 @@ ok-start
 #######################################################################################
 ppp_ip=`ip a show dev $ppp_eth | awk '/inet [12]/{print $2}'`
 if [ -n "$ppp_ip" ] ; then
-	echo 登录成功!
+	echo "登录成功!"
 else
 	pkill tcpdump
 	echo "拨号失败！错误信息：`grep -i Auth-NACK $tmpfile | sed 's/.*##//'`"

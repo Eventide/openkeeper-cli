@@ -32,6 +32,6 @@ setconfig user "用于拨号的账户(例如：xxxxxx@cqupt )"
 setconfig pass "请输入账户密码(例如：password )"
 
 infs="`ip link | awk -F ': ' '/[2-9]:/{print $2}'`"
-setconfig eth  $eth "用于拨号的网卡(选项：$infs )"
+setconfig eth "用于拨号的网卡(选项：$infs )"
 
 exit 0
