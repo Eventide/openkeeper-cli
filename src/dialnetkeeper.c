@@ -96,7 +96,7 @@ void get_real_user_name( const char *src, const char *radius, char *dst )
 	}
 
 	dst[0] = '\r';
-	if ( 0 == strcmp( radius, "jiangxi4.0" ) ) 
+	if ( 0 == strcmp( radius, "jiangxi4.0" ) )
 		dst[1] = '1';
 	else 
 		dst[1] = '\n';

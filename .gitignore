@@ -1,0 +1,8 @@
+*.cache
+*.log
+*.status
+*.o
+ok
+ok-start
+Makefile
+dialnetkeeper

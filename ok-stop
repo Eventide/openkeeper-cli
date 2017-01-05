@@ -1,13 +1,14 @@
 #!/bin/bash
-if [ "0" != "$UID" ] ; then
-	echo "You must be root to run this script!"
+
+if [ "0" != "$UID" ]; then
+	echo "需要 root 权限"
 	exit 1
 else
-	killall ok-connect > /dev/null 2>&1
-	killall pppd > /dev/null 2>&1
+	pkill ok-connect > /dev/null 2>&1
+	pkill pppd > /dev/null 2>&1
 	ip -6 route flush dev tun6to4 > /dev/null 2>&1
 	ip link set dev tun6to4 down > /dev/null 2>&1
 	ip tunnel del tun6to4 > /dev/null 2>&1
 	echo "你已成功下线！"
+	exit 0
 fi
-exit 0

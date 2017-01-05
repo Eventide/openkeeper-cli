@@ -1,59 +1,37 @@
 #!/bin/bash
-# TEMP_PATH 用来存放
+
 TEMP_PATH=/var/cache/openkeeper
 CONFIG_PATH=$TEMP_PATH/config
 
+setconfig() {
+	echo $2
+	read var
+	if [ -z "$var" ] ; then
+		echo "$1 未填写，未写入"
+		return
+	fi
+
+	if [ -f $CONFIG_PATH/$1 ] ; then
+		echo "覆盖原$1"
+	fi
+
+	echo "$var" > "$CONFIG_PATH/$1"
+	chmod 644 "$CONFIG_PATH/$1"
+	chown root.root "$CONFIG_PATH/$1"
+}
+
 if [ "0" != "$UID" ] ; then
-	echo "需要root权限!"
+	echo "需要 root 权限"
 	exit 1
 fi
 
-[[ ! -d $CONFIG_PATH ]]&&mkdir $TEMP_PATH&&mkdir $CONFIG_PATH
+mkdir -p "$CONFIG_PATH"
 cd $CONFIG_PATH
 
-sflag=0
-USAGE="$0 -u 189XXXX1970@cqupt -p supermzb0010 -e eth0 -s"
-while getopts :u:p:e:s OPTION ; do
-	case "$OPTION" in
-		u) user="$OPTARG" ;;
-		p) pass="$OPTARG" ;;
-		e) eth="$OPTARG" ;;
-		s) sflag=1 ;;
-		\?) echo "$USAGE" ;
-		exit 1
-		;;
-	esac
-done
+setconfig user "用于拨号的账户(例如：xxxxxx@cqupt )"
+setconfig pass "请输入账户密码(例如：password )"
 
-function setconfig() {
-	#echo $#
-	#echo "setconfig $1 $2 $3 $4"
-	case "$#" in
-		4) U=$2
-		;;
-		3) 
-			if [ "$3" -eq "0"  ] ; then
-				echo $2
-				read U
-				if [ -z $U ] ; then
-					echo "$1未填写，未写入"
-					return
-				fi
-			else
-				echo "跳过$1"
-				return
-			fi
-		;;
-	esac
-	if [ -f $CONFIG_PATH/$1 ] ; then
-		echo "覆盖原$1"
-		rm $CONFIG_PATH/$1 > /dev/null 2>&1
-	fi
-	echo $U > $CONFIG_PATH/$1
-	chown root.root $CONFIG_PATH/$1
-	chmod 600 $CONFIG_PATH/$1
-}
+infs="`ip link | awk -F ': ' '/[2-9]:/{print $2}'`"
+setconfig eth "用于拨号的网卡(选项：$infs )"
 
-setconfig user $user "用于拨号的账户(例如：189XXXX1970@cqupt)" $sflag
-setconfig pass $pass "请输入账户密码(例如：supermzb0010)" $sflag
-setconfig eth  $eth "用于拨号的网卡(例如：eth0 wlan0 enp1s0 wlp1s0等，终端下ip link命令可查询)" $sflag
+exit 0

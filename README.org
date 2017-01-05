@@ -1,72 +1,30 @@
-#+TITLE: 重庆高校 Linux 上网客户端 openkeeper
-#+STARTUP: content
-
-* 安装
-
-** 安装依赖软件
-
-*** 直接安装
-**** Arch Linux
-#+BEGIN_SRC
-$ yaourt -S openkeeper-cli
-or
-$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-3-x86_64.pkg.tar
-$ sudo pacman -U openkeeper-cli-2.0-3-x86_64.pkg.tar
-#+END_SRC
-
-**** Ubuntu 
-#+BEGIN_SRC 
-$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1.x86_64.deb
-$ sudo apt-get install gdebi-core
-$ sudo gdebi openkeeper-cli-2.0-1-x86_64.deb
-#+END_SRC
-
-*** Fedora
-#+BEGIN_SRC 
-$ wget -c https://github.com/Eventide/openkeeper-cli/raw/master/release/openkeeper-cli-2.0-1.x86_64.rpm
-$ sudo yum install openkeeper-cli-2.0-1-x86_64.rpm
-or
-$ sudo dnf install openkeeper-cli-2.0-1-x86_64.rpm
-#+END_SRC
-
-**** openSUSE 
-#+BEGIN_SRC 
-$ sudo zypper addrepo http://download.opensuse.org/repositories/home:stawidy/openSUSE_Leap_42.1/home:stawidy.repo
-$ sudo zypper refresh
-$ sudo zypper install openkeeper-cli
-#+END_SRC
-
-*** 源码安装
-注意：需要满足 rp-pppoe 、 openssl 依赖。
-#+BEGIN_SRC 
+* 重庆高校 Linux 上网客户端 openkeeper
+** Introduction
+- Netkeeper for Linux.
+** Installation
+#+BEGIN_SRC sh
 $ git clone https://github.com/Eventide/openkeeper-cli.git
 $ cd openkeeper-cli
+$ ./configure --prefix=/usr/local
 $ make 
 $ sudo make install 
 #+END_SRC
-
-* 配置
-** 查看有线网口
-终端执行 =ip link= ，查看输出，有线网口名称一般为 eth0 ， enp1s0 等.
-** 填写配置文件
-#+BEGIN_SRC 
+** Usage
+- Configuration.
+#+BEGIN_SRC sh
 $ sudo ok-config
 #+END_SRC
-
-* 拨号
-#+BEGIN_SRC 
+- Connect.
+#+BEGIN_SRC sh
 $ sudo ok
 #+END_SRC
-* 下线
-#+BEGIN_SRC 
+- Disconnect.
+#+BEGIN_SRC sh
 $ sudo ok-stop
 #+END_SRC
-
-* 卸载
-#+BEGIN_SRC 
-$ cd /tmp/openkeeper-cli && sudo make uninstall
+** Contributors
+#+BEGIN_SRC sh
+Eventide <nanjingzr@yahoo.com>
+RainMark <rain.by.zhou@gmail.com>
+Stawidy  <duyizhaozj321@yahoo.com>
 #+END_SRC
-
-* 问题反馈
-Email: rain_of_mem@163.com\\
-Email: nanjingzr@yahoo.com

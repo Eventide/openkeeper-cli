@@ -1,5 +1,5 @@
 #ifndef __DIANETKEEPER_H
-#define __DIANETKEEPER_H 
+#define __DIANETKEEPER_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,4 +18,4 @@
 void get_user_message( int argc, char *argv[], char *user, char *radius );
 void get_real_user_name( const char *src, const char *radius, char *dst );
 
-#endif /* __DIANETKEEPER_H */ 
+#endif /* __DIANETKEEPER_H */

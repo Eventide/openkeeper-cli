@@ -22,12 +22,8 @@
 #
 #***********************************************************************
 
-# From AUTOCONF
-prefix=/usr
-exec_prefix=${prefix}
-
 # Paths to programs
-CONNECT=${exec_prefix}/sbin/ok-connect
+CONNECT=@prefix@/bin/ok-connect
 ECHO=/bin/echo
 IFCONFIG=/sbin/ifconfig
 
@@ -164,7 +160,7 @@ fi
 # Monitor connection
 TIME=0
 while [ true ] ; do
-    ${exec_prefix}/sbin/pppoe-status $CONFIG > /dev/null 2>&1
+    pppoe-status $CONFIG > /dev/null 2>&1
 
     # Looks like the interface came up
     if [ $? = 0 ] ; then

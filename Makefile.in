@@ -1,0 +1,43 @@
+CC = gcc
+CFLAGS = -O2 -Wall
+LDFLAGS = -lcrypto
+SRC_DIR = src
+PREFIX ?= @prefix@
+BIN_DIR = $(PREFIX)/bin
+DATA_DIR = $(PREFIX)/share/openkeeper
+
+$(SRC_DIR)/dialnetkeeper: $(SRC_DIR)/dialnetkeeper.o
+	$(CC) $< $(LDFLAGS) -o $@
+
+$(SRC_DIR)/%.o: $(SRC_DIR)%.c
+	$(CC) -c $< $(CFLAGS)
+
+.PHONY: clean install uninstall dist-clean
+
+clean:
+	rm -rf $(SRC_DIR)/*.o $(SRC_DIR)/dialnetkeeper
+	rm -rf autom4te.cache config.log config.status ok ok-start
+
+dist-clean: clean
+	rm -rf Makefile
+
+install:
+	mkdir -p $(BIN_DIR)
+	mkdir -p $(DATA_DIR)
+	install -m 755 "$(SRC_DIR)"/dialnetkeeper "$(BIN_DIR)"
+	install -m 755 ok "$(BIN_DIR)"
+	install -m 755 ok-config "$(BIN_DIR)"
+	install -m 755 ok-stop "$(BIN_DIR)"
+	install -m 755 ok-start "$(BIN_DIR)"
+	install -m 755 ok-connect "$(BIN_DIR)"
+	install -m 644 pppoe.conf "$(DATA_DIR)"
+	install -m 644 pap-secrets "$(DATA_DIR)"
+
+uninstall:
+	rm "$(BIN_DIR)"/dialnetkeeper -f
+	rm "$(BIN_DIR)"/ok -f
+	rm "$(BIN_DIR)"/ok-config -f
+	rm "$(BIN_DIR)"/ok-stop -f
+	rm "$(BIN_DIR)"/ok-connect -f
+	rm "$(BIN_DIR)"/ok-start -f
+	rm "$(DATA_DIR)" -rf

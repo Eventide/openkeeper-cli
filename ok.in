@@ -1,14 +1,15 @@
 #!/bin/bash
-PPPOE_START=/usr/sbin/ok-start
+
+INSTALL_PATH=@prefix@/share/openkeeper
+
 TEMP_PATH=/var/cache/openkeeper
-INSTALL_PATH=/usr/share/openkeeper
-CONFIG_PATH=$TEMP_PATH/config
+CONFIG_PATH="$TEMP_PATH"/config
 ppp_eth=ppp0
 
 echo "重邮openkeeper 自编译`uname -m`版"
 
 if [ "0" != "$UID" ] ; then
-	echo "需要root权限!"
+	echo "需要 root 权限"
 	exit 1
 fi
 
@@ -24,47 +25,32 @@ username=`cat $CONFIG_PATH/user`
 #密码:
 password=`cat $CONFIG_PATH/pass`
 
-cd /tmp
+cd "$TEMP_PATH"
 ok-stop > /dev/null 2>&1
 
 tmpfile=`mktemp`
 tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
 
 #######################################################################################
-#	利用dialnetkeeper 计算帐号，填写 rp-pppoe 配置，调用 ok-connect 拨号
-#######################################################################################
 echo "尝试使用用户名$username,网卡$default_eth拨号"
+realusername=`dialnetkeeper "$username" cqxinliradius002`
+m4 -DM4_USER="$realusername" -DM4_ETH="$default_eth" "$INSTALL_PATH"/pppoe.conf > /etc/ppp/pppoe.conf
+m4 -DM4_USER="$realusername" -DM4_PASSWORD="$password" "$INSTALL_PATH"/pap-secrets > /etc/ppp/pap-secrets
+ok-start
 
-realusername=`dialnetkeeper $username cqxinliradius002`
-
-cp $INSTALL_PATH/pppoe.conf $TEMP_PATH/pppoe.conf-tmp
-cp $INSTALL_PATH/pap-secrets $TEMP_PATH/pap-secrets-tmp
-
-echo "ETH=$default_eth" >> $TEMP_PATH/pppoe.conf-tmp
-echo "USER='\"$realusername\"'" >> $TEMP_PATH/pppoe.conf-tmp
-echo "\"$realusername\"	*	\"$password\"" >> $TEMP_PATH/pap-secrets-tmp
-
-cp $TEMP_PATH/pppoe.conf-tmp /etc/ppp/pppoe.conf
-cp $TEMP_PATH/pap-secrets-tmp /etc/ppp/pap-secrets
-
-$PPPOE_START
-
-#######################################################################################
-#				检测是否拨号成功
 #######################################################################################
 ppp_ip=`ip a show dev $ppp_eth | awk '/inet [12]/{print $2}'`
 if [ -n "$ppp_ip" ] ; then
-	echo 登录成功!
+	echo "登录成功!"
 else
 	pkill tcpdump
 	echo "拨号失败！错误信息：`grep -i Auth-NACK $tmpfile | sed 's/.*##//'`"
+	echo "请检查账户时间，账户密码，网卡等配置，或者稍后再试"
+	echo "若配置错误，修改配置后，退出原终端后，在新终端中拨号（若在新终端中失败，请多试几次)"
 	rm $tmpfile -f
-	echo "请检查账户时间，账户密码，网卡等配置，或者稍后再试;若配置错误，修改配置后，退出原终端后，在新终端中拨号（若在新终端中失败，请多试几次)"
 	exit 1
 fi
 
-#######################################################################################
-#				显示内外网IP
 #######################################################################################
 ppp_ip=`echo $ppp_ip | awk -F '/' '{print $1}'`
 echo "外网IP:$ppp_ip"
@@ -72,8 +58,6 @@ default_eth_ip=`ip a show dev $default_eth | awk '/inet [12]/{print $2}'`
 default_eth_ip=`echo $default_eth_ip | awk -F '/' '{print $1}'`
 echo "内网IP:$default_eth_ip"
 
-#######################################################################################
-#				路由处理
 #######################################################################################
 if [ "cqupt" == "$(echo $username | awk -F '@' '{print $2}')" ] ; then
 	gateway_ip=`ip r | awk '/default via/&&/dev '"$default_eth"'/{print $3}'`
@@ -98,13 +82,12 @@ else
 fi
 
 #变更默认路由
-ip route replace default dev $ppp_eth > /dev/null 2>&1 && \
-    ip route replace default dev $ppp_eth > /dev/null 2>&1		# Ubuntu 15.10 以及其衍生版测试发现需要两次 replace 才生效，所以 23333333333.
+#FIXME
+#Ubuntu 15.10 以及其衍生版测试发现需要两次 replace 才生效
+ip route replace default dev $ppp_eth > /dev/null 2>&1
+ip route replace default dev $ppp_eth > /dev/null 2>&1
 
 #######################################################################################
-#				IPv6
-#######################################################################################
-
 ## 添加6TO4隧道
 ip tunnel add tun6to4 mode sit ttl 64 remote any local $ppp_ip
 ip link set dev tun6to4 up
@@ -117,7 +100,6 @@ ipv6_ip=2002:$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4::$ipv6_ip_p1$ipv6_ip_
 ip -6 addr add $ipv6_ip/16 dev tun6to4
 echo "IPV6:$ipv6_ip"
 ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
-
 
 echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
 echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置"
