@@ -1,14 +1,13 @@
-CC = @CC@
-LD = @CC@
+CC = gcc
 CFLAGS = -O2 -Wall
 LDFLAGS = -lcrypto
 SRC_DIR = src
-PREFIX = @prefix@
-BIN_DIR = @prefix@/bin
-DATA_DIR = @prefix@/share/openkeeper
+PREFIX ?= @prefix@
+BIN_DIR = $(PREFIX)/bin
+DATA_DIR = $(PREFIX)/share/openkeeper
 
 $(SRC_DIR)/dialnetkeeper: $(SRC_DIR)/dialnetkeeper.o
-	$(LD) $< $(LDFLAGS) -o $@
+	$(CC) $< $(LDFLAGS) -o $@
 
 $(SRC_DIR)/%.o: $(SRC_DIR)%.c
 	$(CC) -c $< $(CFLAGS)
@@ -23,6 +22,7 @@ dist-clean: clean
 	rm -rf Makefile
 
 install:
+	mkdir -p $(BIN_DIR)
 	mkdir -p $(DATA_DIR)
 	install -m 755 "$(SRC_DIR)"/dialnetkeeper "$(BIN_DIR)"
 	install -m 755 ok "$(BIN_DIR)"
