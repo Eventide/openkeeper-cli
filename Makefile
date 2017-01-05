@@ -15,11 +15,11 @@ install: all
 	install -m 644 pap-secrets $(INSTALL_PATH)
 uninstall:
 	rm /usr/bin/dialnetkeeper -f
-	rm /usr/sbin/ok -f
-	rm /usr/sbin/ok-config -f
-	rm /usr/sbin/ok-stop -f
+	rm /usr/local/sbin/ok -f
+	rm /usr/local/sbin/ok-config -f
+	rm /usr/local/sbin/ok-stop -f
 	rm $(INSTALL_PATH) -rf
-	rm /usr/sbin/ok-connect -f
-	rm /usr/sbin/ok-start -f
+	rm /usr/local/sbin/ok-connect -f
+	rm /usr/local/sbin/ok-start -f
 clean:
 	@(cd $(SUBDIR) && $(MAKE) clean)
