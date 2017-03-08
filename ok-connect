@@ -48,19 +48,10 @@ if test "$SETSID" != "" -a ! -x "$SETSID"; then
     SETSID=""
 fi
 
-CONFIG=/etc/ppp/pppoe.conf
-USER=""
-ETH=""
-
-# Sort out command-line arguments
-case "$#" in
-    1)
-    CONFIG="$1"
-    ;;
-    3)
-    CONFIG="$3"
-    ;;
-esac
+CONFIG=$4
+PASSWORD=$3
+USER=$2
+ETH=$1
 
 if test ! -f "$CONFIG" -o ! -r "$CONFIG" ; then
     echo "$0: Cannot read configuration file '$CONFIG'" >& 2
@@ -71,14 +62,6 @@ export CONFIG
 
 PPPOE_PIDFILE="$PIDFILE.pppoe"
 PPPD_PIDFILE="$PIDFILE.pppd"
-
-# Check for command-line overriding of ETH and USER
-case "$#" in
-    2|3)
-    ETH="$1"
-    USER="$2"
-    ;;
-esac
 
 # Check that config file is sane
 if test "$USER" = "" ; then
@@ -237,19 +220,9 @@ if test "$DEBUG" != "" ; then
     fi
     echo "* The following section shows the pppd command we will invoke" >> $DEBUG
     echo "pppd invocation" >> $DEBUG
-    echo "$SETSID $PPPD pty '$PPPOE_CMD' $PPP_STD_OPTIONS $PPPD_SYNC debug" >> $DEBUG
-    echo "---------------------------------------------" >> $DEBUG
-#--- edit by TLightSky 20100928
-	PPPCONF_NAME=pppconf-tmp
-	PPPCONF=/etc/ppp/peers/$PPPCONF_NAME
-	rm $PPPCONF
-    echo "pty '$PPPOE_CMD'" >> $PPPCONF
-    #echo "-D $DEBUG-0" >> $PPPCONF
-    echo "$PPP_STD_OPTIONS" >> $PPPCONF
-    echo "$PPPD_SYNC" >> $PPPCONF
-    #echo "pty '$PPPOE_CMD' \n-D $DEBUG \n$PPP_STD_OPTIONS \n$PPPD_SYNC " >> $PPPCONF
-    $SETSID $PPPD call $PPPCONF_NAME &
-	debug >> $DEBUG 2>&1
+    echo $SETSID $PPPD pty '$PPPOE_CMD' \
+        $PLUGIN_OPTS noipdefault noauth default-asyncmap $DEFAULTROUTE hide-password nodetach $PEERDNS mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user "$USER" password "$PASSWORD" lcp-echo-interval $LCP_INTERVAL lcp-echo-failure $LCP_FAILURE $PPPD_EXTRA \
+        $PPPD_SYNC debug >> $DEBUG
     echo "---------------------------------------------" >> $DEBUG
     echo "* The following section is an extract from your log." >> $DEBUG
     echo "* Look for error messages from pppd, such as" >> $DEBUG
@@ -295,28 +268,15 @@ fi
 
 echo $$ > $PIDFILE
 
-#--- edit by TLightSky 20100928
-PPPCONF_NAME=pppconf-tmp
-PPPCONF=/etc/ppp/peers/$PPPCONF_NAME
-rm $PPPCONF
-echo "pty '$PPPOE_CMD'" >> $PPPCONF
-echo "$PPP_STD_OPTIONS" >> $PPPCONF
-echo "$PPPD_SYNC" >> $PPPCONF
-OVERRIDE_PPPD_COMMAND="$PPPD call $PPPCONF_NAME"
-#$SETSID $OVERRIDE_PPPD_COMMAND &
-echo $OVERRIDE_PPPD_COMMAND >> /tmp/1.txt
-echo $OVERRIDE_PPPD_COMMAND
-
 while [ true ] ; do
-    if test "$OVERRIDE_PPPD_COMMAND" != "" ; then
-	$SETSID $OVERRIDE_PPPD_COMMAND &
-	echo "$!" > $PPPD_PIDFILE
-    elif test "$LINUX_PLUGIN" != "" ; then
-	$SETSID $PPPD $PPP_STD_OPTIONS $DEMAND &
+    if test "$LINUX_PLUGIN" != "" ; then
+	$SETSID $PPPD \
+        $PLUGIN_OPTS noipdefault noauth default-asyncmap $DEFAULTROUTE hide-password nodetach $PEERDNS mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user "$USER" password "$PASSWORD" lcp-echo-interval $LCP_INTERVAL lcp-echo-failure $LCP_FAILURE $PPPD_EXTRA \
+        $DEMAND &
 	echo "$!" > $PPPD_PIDFILE
     else
 	$SETSID $PPPD pty "$PPPOE_CMD" \
-	    $PPP_STD_OPTIONS \
+	    $PLUGIN_OPTS noipdefault noauth default-asyncmap $DEFAULTROUTE hide-password nodetach $PEERDNS mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user "$USER" password "$PASSWORD" lcp-echo-interval $LCP_INTERVAL lcp-echo-failure $LCP_FAILURE $PPPD_EXTRA \
 	    $DEMAND \
 	    $PPPD_SYNC &
 	echo "$!" > $PPPD_PIDFILE
