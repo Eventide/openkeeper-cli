@@ -4,7 +4,7 @@ INSTALL_PATH=@prefix@/share/openkeeper
 
 TEMP_PATH=/var/cache/openkeeper
 CONFIG_PATH="$TEMP_PATH"/config
-ppp_eth=ppp0
+ppp_interface=ppp0
 
 echo "重邮openkeeper 自编译`uname -m`版"
 
@@ -37,7 +37,7 @@ realusername=`dialnetkeeper "$username" cqxinliradius002`
 ok-start "$default_eth" "$realusername" "$password" "$INSTALL_PATH/pppoe.conf"
 
 #######################################################################################
-ppp_ip=`ip a show dev $ppp_eth | awk '/inet [12]/{print $2}'`
+ppp_ip=`ip a show dev $ppp_interface | awk '/inet [12]/{print $2}'`
 if [ -n "$ppp_ip" ] ; then
 	echo "登录成功!"
 else
@@ -82,8 +82,8 @@ fi
 #变更默认路由
 #FIXME
 #Ubuntu 15.10 以及其衍生版测试发现需要两次 replace 才生效
-ip route replace default dev $ppp_eth > /dev/null 2>&1
-ip route replace default dev $ppp_eth > /dev/null 2>&1
+ip route replace default dev $ppp_interface > /dev/null 2>&1
+ip route replace default dev $ppp_interface > /dev/null 2>&1
 
 #######################################################################################
 ## 添加6TO4隧道
