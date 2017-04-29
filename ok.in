@@ -4,7 +4,8 @@ INSTALL_PATH=@prefix@/share/openkeeper
 
 TEMP_PATH=/var/cache/openkeeper
 CONFIG_PATH="$TEMP_PATH"/config
-ppp_interface=ppp0
+PPP_INTERFACE=ppp0
+ROUTE_METRIC=90
 
 echo "重邮openkeeper 自编译`uname -m`版"
 
@@ -37,7 +38,7 @@ realusername=`dialnetkeeper "$username" cqxinliradius002`
 ok-start "$default_eth" "$realusername" "$password" "$INSTALL_PATH/pppoe.conf"
 
 #######################################################################################
-ppp_ip=`ip a show dev $ppp_interface | awk '/inet [12]/{print $2}'`
+ppp_ip=`ip a show dev $PPP_INTERFACE | awk '/inet [12]/{print $2}'`
 if [ -n "$ppp_ip" ] ; then
 	echo "登录成功!"
 else
@@ -65,14 +66,14 @@ if [ "cqupt" == "$(echo $username | awk -F '@' '{print $2}')" ] ; then
 		ip route del  202.202.0.0/16 > /dev/null 2>&1
 
 		#添加内网路由
-		ip route add  172.16.0.0/12 via $gateway_ip > /dev/null 2>&1
-		ip route add  172.32.0.0/16 via $gateway_ip > /dev/null 2>&1
-		ip route add  172.33.0.0/16 via $gateway_ip > /dev/null 2>&1
-		ip route add  172.34.0.0/16 via $gateway_ip > /dev/null 2>&1
-		ip route add  202.202.32.0/20 via $gateway_ip > /dev/null 2>&1
-		ip route add  202.202.43.0/24 via $gateway_ip > /dev/null 2>&1
-		ip route add  202.202.45.0/24 via $gateway_ip > /dev/null 2>&1
-		ip route add  222.177.140.0/24 via $gateway_ip > /dev/null 2>&1
+		ip route add  172.16.0.0/12 dev $default_eth via $gateway_ip metric $ROUTE_METRIC> /dev/null 2>&1
+		ip route add  172.32.0.0/16 dev $default_eth via $gateway_ip metric $ROUTE_METRIC> /dev/null 2>&1
+		ip route add  172.33.0.0/16 dev $default_eth via $gateway_ip metric $ROUTE_METRIC> /dev/null 2>&1
+		ip route add  172.34.0.0/16 dev $default_eth via $gateway_ip metric $ROUTE_METRIC> /dev/null 2>&1
+		ip route add  202.202.32.0/20 dev $default_eth via $gateway_ip metric $ROUTE_METRIC> /dev/null 2>&1
+		ip route add  202.202.43.0/24 dev $default_eth via $gateway_ip metric $ROUTE_METRIC> /dev/null 2>&1
+		ip route add  202.202.45.0/24 dev $default_eth via $gateway_ip metric $ROUTE_METRIC> /dev/null 2>&1
+		ip route add  222.177.140.0/24 dev $default_eth via $gateway_ip metric $ROUTE_METRIC> /dev/null 2>&1
 	fi
 else
 	#非重邮的帐号默认不处理内网情况。
@@ -82,8 +83,8 @@ fi
 #变更默认路由
 #FIXME
 #Ubuntu 15.10 以及其衍生版测试发现需要两次 replace 才生效
-ip route replace default dev $ppp_interface > /dev/null 2>&1
-ip route replace default dev $ppp_interface > /dev/null 2>&1
+ip route replace default dev $PPP_INTERFACE > /dev/null 2>&1
+ip route replace default dev $PPP_INTERFACE > /dev/null 2>&1
 
 #######################################################################################
 ## 添加6TO4隧道
