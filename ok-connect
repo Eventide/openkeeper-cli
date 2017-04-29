@@ -48,6 +48,7 @@ if test "$SETSID" != "" -a ! -x "$SETSID"; then
     SETSID=""
 fi
 
+IFNAME=$5
 CONFIG=$4
 PASSWORD=$3
 USER=$2
@@ -266,20 +267,16 @@ if test "$DEBUG" != "" ; then
     exit 0
 fi
 
-echo $$ > $PIDFILE
-
 while [ true ] ; do
     if test "$LINUX_PLUGIN" != "" ; then
-	$SETSID $PPPD \
-        $PLUGIN_OPTS noipdefault noauth default-asyncmap $DEFAULTROUTE hide-password nodetach $PEERDNS mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user "$USER" password "$PASSWORD" lcp-echo-interval $LCP_INTERVAL lcp-echo-failure $LCP_FAILURE $PPPD_EXTRA \
-        $DEMAND &
-	echo "$!" > $PPPD_PIDFILE
+	    $SETSID $PPPD \
+            $PLUGIN_OPTS noipdefault noauth default-asyncmap $DEFAULTROUTE hide-password updetach $PEERDNS mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user "$USER" password "$PASSWORD" lcp-echo-interval $LCP_INTERVAL lcp-echo-failure $LCP_FAILURE $PPPD_EXTRA ifname $IFNAME \
+            $DEMAND
     else
-	$SETSID $PPPD pty "$PPPOE_CMD" \
-	    $PLUGIN_OPTS noipdefault noauth default-asyncmap $DEFAULTROUTE hide-password nodetach $PEERDNS mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user "$USER" password "$PASSWORD" lcp-echo-interval $LCP_INTERVAL lcp-echo-failure $LCP_FAILURE $PPPD_EXTRA \
-	    $DEMAND \
-	    $PPPD_SYNC &
-	echo "$!" > $PPPD_PIDFILE
+	    $SETSID $PPPD pty "$PPPOE_CMD" \
+	        $PLUGIN_OPTS noipdefault noauth default-asyncmap $DEFAULTROUTE hide-password updetach $PEERDNS mtu 1492 mru 1492 noaccomp nodeflate nopcomp novj novjccomp user "$USER" password "$PASSWORD" lcp-echo-interval $LCP_INTERVAL lcp-echo-failure $LCP_FAILURE $PPPD_EXTRA ifname $IFNAME \
+	        $DEMAND \
+	        $PPPD_SYNC
     fi
     wait
 

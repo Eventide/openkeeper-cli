@@ -4,7 +4,7 @@ INSTALL_PATH=@prefix@/share/openkeeper
 
 TEMP_PATH=/var/cache/openkeeper
 CONFIG_PATH="$TEMP_PATH"/config
-PPP_INTERFACE=ppp0
+PPP_INTERFACE=openkeeper
 ROUTE_METRIC=90
 
 echo "重邮openkeeper 自编译`uname -m`版"
@@ -29,33 +29,30 @@ password=`cat $CONFIG_PATH/pass`
 cd "$TEMP_PATH"
 ok-stop > /dev/null 2>&1
 
-tmpfile=`mktemp`
-tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
 
 #######################################################################################
-echo "尝试使用用户名$username,网卡$default_eth拨号"
+echo "尝试使用用户名 $username, 网卡 $default_eth 拨号"
+echo "调用 ok-start:"
+echo "=============================="
 realusername=`dialnetkeeper "$username" cqxinliradius002`
-ok-start "$default_eth" "$realusername" "$password" "$INSTALL_PATH/pppoe.conf"
+ok-connect "$default_eth" "$realusername" "$password" "$INSTALL_PATH/pppoe.conf" $PPP_INTERFACE
+echo "=============================="
 
 #######################################################################################
 ppp_ip=`ip a show dev $PPP_INTERFACE | awk '/inet [12]/{print $2}'`
 if [ -n "$ppp_ip" ] ; then
 	echo "登录成功!"
 else
-	pkill tcpdump
-	echo "拨号失败！错误信息：`grep -i Auth-NACK $tmpfile | sed 's/.*##//'`"
+	echo "拨号失败！"
 	echo "请检查账户时间，账户密码，网卡等配置，或者稍后再试"
 	echo "若配置错误，修改配置后，退出原终端后，在新终端中拨号（若在新终端中失败，请多试几次)"
-	rm $tmpfile -f
 	exit 1
 fi
 
 #######################################################################################
 ppp_ip=`echo $ppp_ip | awk -F '/' '{print $1}'`
-echo "外网IP:$ppp_ip"
 default_eth_ip=`ip a show dev $default_eth | awk '/inet [12]/{print $2}'`
 default_eth_ip=`echo $default_eth_ip | awk -F '/' '{print $1}'`
-echo "内网IP:$default_eth_ip"
 
 #######################################################################################
 if [ "cqupt" == "$(echo $username | awk -F '@' '{print $2}')" ] ; then
@@ -81,10 +78,7 @@ else
 fi
 
 #变更默认路由
-#FIXME
-#Ubuntu 15.10 以及其衍生版测试发现需要两次 replace 才生效
-ip route replace default dev $PPP_INTERFACE > /dev/null 2>&1
-ip route replace default dev $PPP_INTERFACE > /dev/null 2>&1
+ip route add default dev $PPP_INTERFACE > /dev/null 2>&1
 
 #######################################################################################
 ## 添加6TO4隧道
@@ -97,13 +91,11 @@ ipv6_ip_p3=`echo $ppp_ip | awk -F'.' '{if ($3>16) {printf("%x",$3)} else {printf
 ipv6_ip_p4=`echo $ppp_ip | awk -F'.' '{if ($4>16) {printf("%x",$4)} else {printf("0%x",$4)}}'`
 ipv6_ip=2002:$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4::$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4
 ip -6 addr add $ipv6_ip/16 dev tun6to4
-echo "IPV6:$ipv6_ip"
+echo "IPV6: $ipv6_ip"
 ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
 
-echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
-echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置"
+echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用 ok-stop 命令"
+echo "处理完毕，若要使用其他账户登录，请用 ok-config 重新配置"
 
-grep -i Auth-NACK $tmpfile
-pkill tcpdump; rm $tmpfile
 
 exit 0
