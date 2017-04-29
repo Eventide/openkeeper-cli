@@ -11,4 +11,4 @@ dialnetkeeper
 *.deb
 description-pak
 doc-pak/
-
+*.tgz
