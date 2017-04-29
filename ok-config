@@ -1,23 +1,24 @@
 #!/bin/bash
 
-TEMP_PATH=/var/cache/openkeeper
-CONFIG_PATH=$TEMP_PATH/config
+CONFIG_PATH=/etc/openkeeper-cli
+CONFIG_NAME=$1
 
-setconfig() {
-	echo $2
-	read var
-	if [ -z "$var" ] ; then
-		echo "$1 未填写，未写入"
-		return
+setconfig()
+{
+    default_value=$(eval echo "\$$1")
+    if [ -z $default_value ]; then
+        default_value=$3
+    fi
+
+    echo -n "$2 [$default_value]: "
+	read value
+	if [ -z "$value" ] ; then
+        value=$default_value
 	fi
 
-	if [ -f $CONFIG_PATH/$1 ] ; then
-		echo "覆盖原$1"
-	fi
-
-	echo "$var" > "$CONFIG_PATH/$1"
-	chmod 644 "$CONFIG_PATH/$1"
-	chown root.root "$CONFIG_PATH/$1"
+	echo "$1=\"$value\"" >> "$new_config_name"
+	chmod 644 "$new_config_name"
+	chown root:root "$new_config_name"
 }
 
 if [ "0" != "$UID" ] ; then
@@ -25,13 +26,28 @@ if [ "0" != "$UID" ] ; then
 	exit 1
 fi
 
+if [ -z "$CONFIG_NAME" ]; then
+    CONFIG_NAME="default"
+fi
+CONFIG_NAME="$CONFIG_PATH/$CONFIG_NAME"
+
 mkdir -p "$CONFIG_PATH"
-cd $CONFIG_PATH
 
-setconfig user "用于拨号的账户(例如：xxxxxx@cqupt )"
-setconfig pass "请输入账户密码(例如：password )"
+touch $CONFIG_NAME
+. $CONFIG_NAME
+new_config_name=$(mktemp)
+echo "正在修改配置: $CONFIG_NAME"
 
-infs="`ip link | awk -F ': ' '/[2-9]:/{print $2}'`"
-setconfig eth "用于拨号的网卡(选项：$infs )"
+setconfig OK_USER "用于拨号的账户(例如：电信手机号@cqupt )"
+setconfig OK_PASS "请输入账户密码(默认为身份证号后6位)"
+setconfig OK_ETH "用于拨号的网卡(例如 eth0 或 enp0s0)"
 
+setconfig OK_IFNAME "PPP 隧道的名字" ppp-ok
+setconfig OK_6TO4TUN "6to4 隧道名字" tun-ok6to4
+setconfig OK_METRIC "静态路由的跃点数" 0
+setconfig OK_RTTABLE "路由表名称" "local"
+
+mv $new_config_name $CONFIG_NAME
+
+echo "配置已写入: $CONFIG_NAME"
 exit 0
