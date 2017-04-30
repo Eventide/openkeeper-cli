@@ -42,6 +42,7 @@ setconfig OK_USER "用于拨号的账户(例如：电信手机号@cqupt )"
 setconfig OK_PASS "请输入账户密码(默认为身份证号后6位)"
 setconfig OK_ETH "用于拨号的网卡(例如 eth0 或 enp0s0)"
 
+echo "=== 以下为高级配置，可以直接按回车使用默认配置 ==="
 setconfig OK_IFNAME "PPP 隧道的名字" ppp-ok
 setconfig OK_6TO4TUN "6to4 隧道名字" tun-ok6to4
 setconfig OK_METRIC "静态路由的跃点数" 0
