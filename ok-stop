@@ -1,14 +1,22 @@
 #!/bin/bash
 
+CONFIG_PATH=/etc/openkeeper-cli
+
 if [ "0" != "$UID" ]; then
 	echo "需要 root 权限"
 	exit 1
-else
-	pkill ok-connect > /dev/null 2>&1
-	pkill pppd > /dev/null 2>&1
-	ip -6 route flush dev tun6to4 > /dev/null 2>&1
-	ip link set dev tun6to4 down > /dev/null 2>&1
-	ip tunnel del tun6to4 > /dev/null 2>&1
-	echo "你已成功下线！"
-	exit 0
 fi
+
+config=$1
+if [ -z $config ]; then
+    config="default"
+fi
+source "$CONFIG_PATH/$config"
+
+kill $(cat "/run/$OK_IFNAME.pid")
+ip -6 route flush dev $OK_6TO4TUN
+ip link set dev $OK_6TO4TUN down
+ip tunnel del $OK_6TO4TUN
+
+echo "已断开连接: $config"
+exit 0

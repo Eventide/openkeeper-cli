@@ -3,8 +3,7 @@
 INSTALL_PATH=@prefix@/share/openkeeper
 
 TEMP_PATH=/var/cache/openkeeper
-CONFIG_PATH="$TEMP_PATH"/config
-ppp_eth=ppp0
+CONFIG_PATH=/etc/openkeeper-cli
 
 echo "重邮openkeeper 自编译`uname -m`版"
 
@@ -18,63 +17,60 @@ if [ ! -d $CONFIG_PATH ] ; then
 	ok-config
 fi
 
-#网卡:
-default_eth=`cat $CONFIG_PATH/eth`
-#用户名:
-username=`cat $CONFIG_PATH/user`
-#密码:
-password=`cat $CONFIG_PATH/pass`
+config_file=$1
+if [ -z $config_file ]; then
+    config_file="default"
+fi
+pushd $CONFIG_PATH > /dev/null
+source $config_file
+popd > /dev/null
+echo "采用配置文件: $config_file"
 
 cd "$TEMP_PATH"
-ok-stop > /dev/null 2>&1
-
-tmpfile=`mktemp`
-tcpdump -i $default_eth -n pppoes > $tmpfile 2> /dev/null &
 
 #######################################################################################
-echo "尝试使用用户名$username,网卡$default_eth拨号"
-realusername=`dialnetkeeper "$username" cqxinliradius002`
-m4 -DM4_USER="$realusername" -DM4_ETH="$default_eth" "$INSTALL_PATH"/pppoe.conf > /etc/ppp/pppoe.conf
-m4 -DM4_USER="$realusername" -DM4_PASSWORD="$password" "$INSTALL_PATH"/pap-secrets > /etc/ppp/pap-secrets
-ok-start
+echo "尝试使用用户名 $OK_USER, 网卡 $OK_ETH 拨号"
+echo "调用 ok-connect:"
+echo "=============================="
+realOK_USER=`dialnetkeeper "$OK_USER" cqxinliradius002`
+ok-connect "$OK_ETH" "$realOK_USER" "$OK_PASS" "$INSTALL_PATH/pppoe.conf" $OK_IFNAME
+echo "=============================="
+echo -n "pppd 的 PID 为 "
+cat /run/$OK_IFNAME.pid
 
 #######################################################################################
-ppp_ip=`ip a show dev $ppp_eth | awk '/inet [12]/{print $2}'`
+ppp_ip=`ip a show dev $OK_IFNAME | awk '/inet [12]/{print $2}'`
 if [ -n "$ppp_ip" ] ; then
 	echo "登录成功!"
 else
-	pkill tcpdump
-	echo "拨号失败！错误信息：`grep -i Auth-NACK $tmpfile | sed 's/.*##//'`"
+	echo "拨号失败！"
 	echo "请检查账户时间，账户密码，网卡等配置，或者稍后再试"
 	echo "若配置错误，修改配置后，退出原终端后，在新终端中拨号（若在新终端中失败，请多试几次)"
-	rm $tmpfile -f
 	exit 1
 fi
 
 #######################################################################################
 ppp_ip=`echo $ppp_ip | awk -F '/' '{print $1}'`
-echo "外网IP:$ppp_ip"
-default_eth_ip=`ip a show dev $default_eth | awk '/inet [12]/{print $2}'`
-default_eth_ip=`echo $default_eth_ip | awk -F '/' '{print $1}'`
-echo "内网IP:$default_eth_ip"
+OK_ETH_ip=`ip a show dev $OK_ETH | awk '/inet [12]/{print $2}'`
+OK_ETH_ip=`echo $OK_ETH_ip | awk -F '/' '{print $1}'`
 
 #######################################################################################
-if [ "cqupt" == "$(echo $username | awk -F '@' '{print $2}')" ] ; then
-	gateway_ip=`ip r | awk '/default via/&&/dev '"$default_eth"'/{print $3}'`
+if [ "cqupt" == "$(echo $OK_USER | awk -F '@' '{print $2}')" ] ; then
+	gateway_ip=`ip r | awk '/default via/&&/dev '"$OK_ETH"'/{print $3}'`
 	if [ -n "$gateway_ip" ] ; then
 		#删除默认路由
 		ip route del  172.0.0.0/8 > /dev/null 2>&1
 		ip route del  202.202.0.0/16 > /dev/null 2>&1
 
 		#添加内网路由
-		ip route add  172.16.0.0/12 via $gateway_ip > /dev/null 2>&1
-		ip route add  172.32.0.0/16 via $gateway_ip > /dev/null 2>&1
-		ip route add  172.33.0.0/16 via $gateway_ip > /dev/null 2>&1
-		ip route add  172.34.0.0/16 via $gateway_ip > /dev/null 2>&1
-		ip route add  202.202.32.0/20 via $gateway_ip > /dev/null 2>&1
-		ip route add  202.202.43.0/24 via $gateway_ip > /dev/null 2>&1
-		ip route add  202.202.45.0/24 via $gateway_ip > /dev/null 2>&1
-		ip route add  222.177.140.0/24 via $gateway_ip > /dev/null 2>&1
+		ip route add  172.16.0.0/12 dev $OK_ETH via $gateway_ip metric $OK_METRIC table $OK_RTTABLE> /dev/null 2>&1
+		ip route add  172.32.0.0/16 dev $OK_ETH via $gateway_ip metric $OK_METRIC table $OK_RTTABLE> /dev/null 2>&1
+		ip route add  172.33.0.0/16 dev $OK_ETH via $gateway_ip metric $OK_METRIC table $OK_RTTABLE> /dev/null 2>&1
+		ip route add  172.34.0.0/16 dev $OK_ETH via $gateway_ip metric $OK_METRIC table $OK_RTTABLE> /dev/null 2>&1
+		ip route add  202.202.32.0/20 dev $OK_ETH via $gateway_ip metric $OK_METRIC table $OK_RTTABLE> /dev/null 2>&1
+		ip route add  202.202.43.0/24 dev $OK_ETH via $gateway_ip metric $OK_METRIC table $OK_RTTABLE> /dev/null 2>&1
+		ip route add  202.202.45.0/24 dev $OK_ETH via $gateway_ip metric $OK_METRIC table $OK_RTTABLE> /dev/null 2>&1
+		ip route add  222.177.140.0/24 dev $OK_ETH via $gateway_ip metric $OK_METRIC table $OK_RTTABLE> /dev/null 2>&1
 	fi
 else
 	#非重邮的帐号默认不处理内网情况。
@@ -82,29 +78,24 @@ else
 fi
 
 #变更默认路由
-#FIXME
-#Ubuntu 15.10 以及其衍生版测试发现需要两次 replace 才生效
-ip route replace default dev $ppp_eth > /dev/null 2>&1
-ip route replace default dev $ppp_eth > /dev/null 2>&1
+ip route add default dev $OK_IFNAME > /dev/null 2>&1
 
 #######################################################################################
 ## 添加6TO4隧道
-ip tunnel add tun6to4 mode sit ttl 64 remote any local $ppp_ip
-ip link set dev tun6to4 up
+ip tunnel add $OK_6TO4TUN mode sit ttl 64 remote any local $ppp_ip
+ip link set dev $OK_6TO4TUN up
 ## 添加IPv6地址
 ipv6_ip_p1=`echo $ppp_ip | awk -F'.' '{if ($1>16) {printf("%x",$1)} else {printf("0%x",$1)}}'`
 ipv6_ip_p2=`echo $ppp_ip | awk -F'.' '{if ($2>16) {printf("%x",$2)} else {printf("0%x",$2)}}'`
 ipv6_ip_p3=`echo $ppp_ip | awk -F'.' '{if ($3>16) {printf("%x",$3)} else {printf("0%x",$3)}}'`
 ipv6_ip_p4=`echo $ppp_ip | awk -F'.' '{if ($4>16) {printf("%x",$4)} else {printf("0%x",$4)}}'`
 ipv6_ip=2002:$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4::$ipv6_ip_p1$ipv6_ip_p2:$ipv6_ip_p3$ipv6_ip_p4
-ip -6 addr add $ipv6_ip/16 dev tun6to4
-echo "IPV6:$ipv6_ip"
-ip -6 route add default via ::192.88.99.1 dev tun6to4 metric 1
+ip -6 addr add $ipv6_ip/16 dev $OK_6TO4TUN
+echo "IPV6: $ipv6_ip"
+ip -6 route add default via ::192.88.99.1 dev $OK_6TO4TUN metric 1
 
-echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用ok-stop命令"
-echo "处理完毕，若要使用其他账户登录，请用ok-config重新配置"
+echo "拨号结束，若关闭本终端，不会断开网络连接，断开网络连接请使用 ok-stop 命令"
+echo "处理完毕，若要使用其他账户登录，请用 ok-config 重新配置"
 
-grep -i Auth-NACK $tmpfile
-pkill tcpdump; rm $tmpfile
 
 exit 0

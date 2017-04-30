@@ -16,7 +16,7 @@ $(SRC_DIR)/%.o: $(SRC_DIR)%.c
 
 clean:
 	rm -rf $(SRC_DIR)/*.o $(SRC_DIR)/dialnetkeeper
-	rm -rf autom4te.cache config.log config.status ok ok-start
+	rm -rf autom4te.cache config.log config.status ok
 
 dist-clean: clean
 	rm -rf Makefile
@@ -28,7 +28,6 @@ install:
 	install -m 755 ok "$(BIN_DIR)"
 	install -m 755 ok-config "$(BIN_DIR)"
 	install -m 755 ok-stop "$(BIN_DIR)"
-	install -m 755 ok-start "$(BIN_DIR)"
 	install -m 755 ok-connect "$(BIN_DIR)"
 	install -m 644 pppoe.conf "$(DATA_DIR)"
 	install -m 644 pap-secrets "$(DATA_DIR)"
@@ -39,5 +38,4 @@ uninstall:
 	rm "$(BIN_DIR)"/ok-config -f
 	rm "$(BIN_DIR)"/ok-stop -f
 	rm "$(BIN_DIR)"/ok-connect -f
-	rm "$(BIN_DIR)"/ok-start -f
 	rm "$(DATA_DIR)" -rf

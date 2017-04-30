@@ -6,3 +6,9 @@ ok
 ok-start
 Makefile
 dialnetkeeper
+
+# checkinstall
+*.deb
+description-pak
+doc-pak/
+*.tgz
